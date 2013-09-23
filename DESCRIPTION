@@ -1,9 +1,9 @@
-Package: Rngsutils
+Package: r-ngs-utils
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: R wrappers for sequencing data
+Version: 0.3
 Date: 2013-06-19
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Sahil Seth
+Maintainer: sseth@mdanderson.org
+Description: R utilities to play with Next (2nd) Generation Sequencing data. More specifically this serves as a wrapper for tools like: GATK & PICARD etc.
+License: GPL

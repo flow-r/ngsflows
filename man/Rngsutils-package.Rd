@@ -3,22 +3,25 @@
 \alias{Rngsutils}
 \docType{package}
 \title{
-What the package does (short line)
-~~ package title ~~
+This aims to provide a R intereface to some popular sequencing data analyzing tools
 }
 \description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
+Some of the tools the first version aims at are:
+\item{
+ - GATK - Genome Analysis toolkit 
+ - PICARD
+ }
 }
 \details{
 \tabular{ll}{
 Package: \tab Rngsutils\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2013-06-19\cr
-License: \tab What license is it under?\cr
+Date: \tab 2013-09-11\cr
+License: \tab GPL\cr
 }
-~~ An overview of how to use the package, including the most important functions ~~
+Rngsutils::runGatk()
+Rngsutils::runPicard()
 }
 \author{
 Who wrote it

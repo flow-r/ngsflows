@@ -7,4 +7,5 @@ R utilities to play with Next (2nd) Generation Sequencing data. More specificall
 This package is still in alpha, and may not work as desired:
 
     install.packages("devtools")
+	require(devtools)
     install_github("r-ngs-utils",username="sahiilseth")
