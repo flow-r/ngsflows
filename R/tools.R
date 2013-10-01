@@ -74,7 +74,8 @@ runSamFlagStat <- function(bamFile,samtools=file.path(getOption("ngs.samtoolPath
 ## type="gatk.SomaticIndel";tool <- "SomaticIndelDetector";logPath="/IACS1/GCC/log/indel";opts <- ""
 runGatk <- function(bamFile,tool,params="",outsuf,gatkPath=getOption("ngs.gatkPath"),outPath=getOption("ngs.sampleQAPath"),
                     logPath=getOption("ngs.sampleQAPath"),
-                    java=getOption("ngs.java"),javaMem=getOption("ngs.javaMem"),insuf=".bam|.sam",verbose=TRUE,force=FALSE){
+                    java=getOption("ngs.java"),javaMem=getOption("ngs.javaMem"),javaTemp=getOption("ngs.javaTemp"),
+                    insuf=".bam|.sam",verbose=TRUE,force=FALSE){
     outFile <- file.path(outPath,gsub(insuf,sprintf(".%s",outsuf),basename(bamFile)))
     logFile <- file.path(logPath,gsub(insuf,sprintf(".%s.log",outsuf),basename(bamFile)))
     log <- paste(as.character(Sys.time()),"\t",bamFile,"\t","BGN",tool,"run\n")
@@ -82,8 +83,9 @@ runGatk <- function(bamFile,tool,params="",outsuf,gatkPath=getOption("ngs.gatkPa
     if(!force & file.exists(outFile)){
         if(verbose) cat(sprintf("The outfile already exists: %s Use some force!",outFile));
         return(outFile)}
-    cmd <- sprintf("time %s %s -Djava.io.tmpdir=/IACS1/tmp -jar %s/GenomeAnalysisTK.jar -T %s -I %s -o %s %s 1>> %s 2>>%s",
-                   java,javaMem,gatkPath,tool,bamFile,outFile,params,logFile,logFile)
+    cmd <- sprintf("time %s %s -Djava.io.tmpdir=%s -jar %s/GenomeAnalysisTK.jar -T %s -I %s -o %s %s 1>> %s 2>>%s",
+                   java,javaMem,javaTemp,gatkPath,tool,bamFile,outFile,params,logFile,logFile)
+    if(verbose) cat(cmd,"\n")
     try(system(cmd))
     log <- paste(as.character(Sys.time()),"\t",bamFile,"\t","END",tool,"run\n")
     cat(log,file=logFile,append=TRUE); if(verbose){cat(log)}
