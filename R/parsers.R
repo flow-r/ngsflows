@@ -76,6 +76,21 @@ picard.parse.hsMetric <- function(outFile,names.prefix=""){
   return(vals)
 }
 
+
+## /IACS1/GCC/QA/130306_SN208_0456_AC1REFACXX/MOON-LAL-AL622A706S3_5_TAGGAT/MOON-LAL-AL622A706S3_130306_SN208_0456_AC1REFACXX_s_5_TAGGAT.rg.sorted.recalibed.readCounts.tsv
+getReadsOnTarget <- function(outFile){
+    out2 <- try(read.table(outFile,header=TRUE),silent=TRUE)
+}
+
+picard.parse.IdxStats <- function(file){
+   tmp=scan(file,what="character",sep="\n")
+    tmp=tmp[-length(tmp)]
+    ret <- try(do.call(rbind,lapply(1:length(tmp),function(i){
+      strsplit(tmp[i],"\t|=| ")[[1]][c(1,4,7,10)]
+      })))
+   return(ret)
+}
+
 ##ngs.getMask(runid); to setup seqLen
 ## 3194780 + 0 in total (QC-passed reads + QC-failed reads)
 ## 860 + 0 duplicates
