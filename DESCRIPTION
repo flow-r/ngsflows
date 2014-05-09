@@ -1,9 +1,10 @@
-Package: r-ngs-utils
+Package: ngsutils
 Type: Package
 Title: R wrappers for sequencing data
 Version: 0.3
 Date: 2013-06-19
 Author: Sahil Seth
-Maintainer: sseth@mdanderson.org
+Maintainer: Sahil Seth <sseth@mdanderson.org>
+Depends: utils
 Description: R utilities to play with Next (2nd) Generation Sequencing data. More specifically this serves as a wrapper for tools like: GATK & PICARD etc.
 License: GPL

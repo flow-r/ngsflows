@@ -8,4 +8,4 @@ This package is still in alpha, and may (will) not work as desired:
 
     install.packages("devtools")
 	require(devtools)
-    install_github("r-ngs-utils",username="sahilseth")
+    install_github("ngsutils",username="sahilseth")
