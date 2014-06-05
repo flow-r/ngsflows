@@ -17,7 +17,6 @@ pipe_qc <- function(runid, check_barcode=TRUE, aln=TRUE, rnaseq_qc=FALSE, captur
     ## if aln is true: run alignment using bwa
     ## if rnaseq_qc is true; run that
     #system("source /scratch/iacs/bin/pipe.v2/scripts/set.environ")
-
     ## ------------ CASAVA
     basecalls=sprintf("%s/intensity/%s/Data/Intensities/BaseCalls",Sys.getenv("GCC_PATH"),runid)
     basepath=sprintf("%s/intensity/%s",Sys.getenv("GCC_PATH"),runid)

@@ -1,4 +1,20 @@
+## A class that contains bam file information
+## Copyright 2014, Sahil Seth, all rights reserved
+## sahil.seth@me.com
+## A few functions to supplement those already in this package.
+#### -----------------------
 
+
+bwapath <- "/scratch/rists/hpcapps/x86_64/bwa-0.7.5a"
+samtools <- "/scratch/rists/hpcapps/x86_64/samtools/0.1.19/bin/samtools"
+bwa_aln_opts="-l 50 -n 6 -k 4 -t 6"
+bwa_sampe_opts=""
+java <- "/scratch/rists/hpcapps/x86_64/jdk/jdk1.7.0/bin/java"
+tmppath <- "tmp"
+picardpath <- "/scratch/rists/hpcapps/x86_64/picard/1.112"
+reflib <- "/scratch/rists/hpcapps/reference/human/b37/indexes/bwa/0.7.5a/human_g1k_mt_NC_012920.1.fasta"
+rgpl=platform='illumina'
+rgcn=center='IACS'
 
 pipe_aln_merge <- function(samplematfile, gccpath, bampath, qapath, gatkpath, se.or.pe, execute=FALSE){
     if(missing(gccpath)) gccpath = "/scratch/iacs/gcc"
@@ -7,16 +23,6 @@ pipe_aln_merge <- function(samplematfile, gccpath, bampath, qapath, gatkpath, se
     len=length(samples)
     ## ----------------- paths and variables
     flowname <- "aln_merge"
-    bwapath <- "/scratch/rists/hpcapps/x86_64/bwa-0.7.5a"
-    samtools <- "/scratch/rists/hpcapps/x86_64/samtools/0.1.19/bin/samtools"
-    bwa_aln_opts="-l 50 -n 6 -k 4 -t 6"
-    bwa_sampe_opts=""
-    java <- "/scratch/rists/hpcapps/x86_64/jdk/jdk1.7.0/bin/java"
-    tmppath <- "tmp"
-    picardpath <- "/scratch/rists/hpcapps/x86_64/picard/1.112"
-    reflib <- "/scratch/rists/hpcapps/reference/human/b37/indexes/bwa/0.7.5a/human_g1k_mt_NC_012920.1.fasta"
-    rgpl=platform='illumina'
-    rgcn=center='IACS'
     q_obj <- queue(type="torque",queue="iacs")
     ## ----------------- cpu & mem
     java_mem <- "-Xmx4g"

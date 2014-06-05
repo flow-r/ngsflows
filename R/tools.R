@@ -43,13 +43,15 @@ runPicard.fixRGTags <- function(bam,tool="AddOrReplaceReadGroups.jar",
                                 picardPath=getOption("ngs.picardPath"),
                                 outBam,rgid,rgsm,rglb,rgpu,rgpl="Illumina_HiSeq2000",rgcn='IACS',
                                 javaMem=getOption("ngs.javaMem"),
-                                javaTemp="/IACS1/tmp"){
+                                javaTemp="/IACS1/tmp",
+                                verbose=FALSE, execute=FALSE){
     ## picard get the correct name
     cat("Working on ",bam,"\n")
     log=gsub(".bam",".log",outBam)
-    cmd=sprintf("%s %s -Djava.io.tmpdir=%s -jar %s/%s INPUT=%s OUTPUT=%s SORT_ORDER=coordinate RGID=%s RGLB=%s RGPL=%s RGPU=%s RGSM=%s RGCN=%s VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true 1>> %s 2>> %s",
-    getOption("ngs.java"),javaMem,javaTemp,picardPath,tool,bam,outBam,rgid,rglb,rgpl,rgpu,rgsm,rgcn,log,log)
-    cat(cmd,"\n");system(cmd)
+    cmd=sprintf("%s %s -Djava.io.tmpdir=%s -jar %s/%s INPUT=%s OUTPUT=%s SORT_ORDER=coordinate RGID=%s RGLB=%s RGPL=%s RGPU=%s RGSM=%s RGCN=%s VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true",
+    getOption("ngs.java"),javaMem,javaTemp,picardPath,tool,bam,outBam,rgid,rglb,rgpl,rgpu,rgsm,rgcn)
+    if(verbose) cat(cmd,"\n");
+    if(execute) system(cmd)
 }
 
 ##debug(runSamFlagStat)
