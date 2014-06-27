@@ -59,6 +59,11 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <h4 class="date"><em>June 27, 2014</em></h4>
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#setup">Setup</a></li>
+</ul>
+</div>
 
 <p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com">http://rmarkdown.rstudio.com</a>.</p>
 <p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
@@ -70,28 +75,9 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 Rscript --version
 ## get runflow from github, name of the flow, samplesheet, parameterfile
 ## wget runflow</code></pre>
-<pre class="r"><code>#install.packages('devtools')
-require(devtools)</code></pre>
-<pre><code>## Loading required package: devtools
-## 
-## Attaching package: 'devtools'
-## 
-## The following objects are masked from 'package:utils':
-## 
-##     ?, help
-## 
-## The following object is masked from 'package:base':
-## 
-##     system.file</code></pre>
-<pre class="r"><code>install_github(repo = 'ngsutils', username = 'sahilseth')</code></pre>
-<pre><code>## Installing github repo ngsutils/master from sahilseth
-## Downloading master.zip from https://github.com/sahilseth/ngsutils/archive/master.zip
-## Installing package from /var/folders/zk/n52wn3r928z88m0x66r5y8pny_mmbk/T//RtmpCiIAkz/master.zip
-## arguments 'minimized' and 'invisible' are for Windows only
-## Installing ngsutils
-## '/Library/Frameworks/R.framework/Resources/bin/R' --vanilla CMD INSTALL  \
-##   '/private/var/folders/zk/n52wn3r928z88m0x66r5y8pny_mmbk/T/RtmpCiIAkz/devtools376349ed4b4b/ngsutils-master'  \
-##   --library='/Users/sseth/Rlibs' --install-tests</code></pre>
+<pre class="r"><code>install.packages('devtools')
+require(devtools)
+install_github(repo = 'ngsutils', username = 'sahilseth')</code></pre>
 </div>
 
 

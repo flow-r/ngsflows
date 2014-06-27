@@ -3,6 +3,7 @@ title: "ngsutils manual"
 author: "Sahil Seth"
 date: "June 27, 2014"
 output:
+  html_document:
   pdf_document:
     toc: yes
 ---
@@ -22,10 +23,9 @@ Rscript --version
 ## wget runflow
 ```
 
-```{r install}
-#install.packages('devtools')
+```{r install, eval=FALSE}
+install.packages('devtools')
 require(devtools)
-
 install_github(repo = 'ngsutils', username = 'sahilseth')
 
 ```
