@@ -1,13 +1,3 @@
----
-title: "ngsutils manual"
-author: "Sahil Seth"
-date: "June 27, 2014"
-output:
-  html_document:
-    toc: no
-  pdf_document:
-    toc: yes
----
 
 ```{r, eval=FALSE, echo=FALSE}
 require(knitr)
