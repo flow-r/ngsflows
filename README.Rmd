@@ -4,6 +4,7 @@ author: "Sahil Seth"
 date: "June 27, 2014"
 output:
   html_document:
+    toc: no
   pdf_document:
     toc: yes
 ---
