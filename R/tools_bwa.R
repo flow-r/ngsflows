@@ -1,4 +1,8 @@
-## bwa
+## A class that contains bam file information
+## Copyright 2014, Sahil Seth, all rights reserved
+## sahil.seth@me.com
+## A few functions to supplement those already in this package.
+#### -----------------------
 
 require(flow)
 setClass("bwa", contains = "job",
@@ -28,5 +32,5 @@ bwa <- function(fastq1 = '', fastq2 = '', bwa_exe = 'bwa', bwa_command = c("mem"
   return(object)
 }
 
-bwa()
+bwa()@cmds
 #cmd_aln1 <- paste(bwapath, "/bwa aln ",bwa_aln_opts," ",reflib," ",fqs1,sep = "")

@@ -1,4 +1,4 @@
-Package: ngsutils
+Package: ngsflows
 Type: Package
 Title: R wrappers for sequencing data
 Version: 0.3
