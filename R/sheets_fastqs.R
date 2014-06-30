@@ -18,7 +18,7 @@ split_names_fastq=split.names.fastq
 
 create_sample_mat <- function(path, project, subproject, runid, outpath, format,
                               pattern = "fastq.gz|fq.gz|fastq|fq"){
-    fqs <- list.files(path,pattern = pattern,full.names=TRUE,recursive=TRUE)
+    fqs <- unlist(lapply(path, list.files, pattern = pattern,full.names=TRUE,recursive=TRUE))
     if(missing(project)) project = basename(path)
     if(missing(subproject)) subproject = substr(project, 1, 2)
     if(missing(outpath)) outpath = "." ## folder for samplemat
@@ -39,6 +39,7 @@ create_sample_mat <- function(path, project, subproject, runid, outpath, format,
     sorted_bam <- sprintf("%s_rg.sorted.bam",out_basename)
     recal_bam <- sprintf("%s_rg.sorted.recalibed.bam", out_basename)
     fq_mat <- cbind(fq_mat, out_basename, sorted_bam, recal_bam, runid, project, subproject)
+    fq_mat = fq_mat[!grepl("Undetermined", fq_mat$samplename), ] ## remove undermined
     if(!file.exists(outpath)) dir.create(outpath)
     write.csv(fq_mat, sprintf("%s/%s_%s_%s_sample_mat.csv", outpath, project, subproject,
                               runid), row.names=FALSE)
@@ -77,6 +78,4 @@ if(FALSE){
     path=sprintf("/scratch/iacs/gcc/leveli/%s",runid)
     fq_mat <- create_sample_mat(path,project="ANDY",subproject="Futreal-AS", runid=runid,
                                 outpath="~/flows/ANDY-Futreal-AS")
-
-
 }

@@ -17,7 +17,8 @@ read_paired_samplesheet <- function(x, ...){
     return(list(single_mat=single_mat, paired_mat=mat))
 }
 
-tooling_paired_samplesheet <- function(x, outfile, tumor.only=FALSE, normal.only=FALSE){
+## x is a object from seqan_tooling
+create_tooling_paired_samplesheet <- function(x, outfile, tumor.only=FALSE, normal.only=FALSE){
     colnames(x)  <- tolower(colnames(x))
     project=apply(x[,c("project","subproject")], 1, paste, collapse="-")
     if(tumor.only){
@@ -31,3 +32,34 @@ tooling_paired_samplesheet <- function(x, outfile, tumor.only=FALSE, normal.only
     }
     return(out_mat)
 }
+
+## x is a matrix with two columns sampname refname
+## refname can be common_normal_01
+create_paired_samplesheet <- function(x, fqmat, sampbam, refbam, outfile, db_sampleid = 0, db_refid = 0, out_prefix, bampath,
+                                      ## optional, required only when fqmat not provided
+                                      project = 'project', 
+                                      normal_bam_01 = "/scratch/iacs/ngs/commonNormalBam/ANDY-Hetero-JZ-330-10-01_130425_SN208_0465_BD2705ACXX_merged2_rg.sorted.recalibed.bam"){
+  ## if fqmat is available
+  ## if fqmat is available we will get things from here
+  if(!missing(fqmat)){
+      tmp <- unlist(sapply(x[,1], function(s) fqmat[fqmat$samplename == s, "recal_bam"][1]))
+      if(!is.null(tmp)) tmp_sampbam <- tmp
+      if(!missing(bampath)) tmp_sampbam = file.path(bampath, tmp_sampbam)
+      refbam <- unlist(sapply(x[,2], function(s){  
+        if(s == "common_normal_01") return(normal_bam_01)
+        fqmat[fqmat$samplename == s, "recal_bam"][1]
+      }))    
+      project <- unlist(sapply(x[,1], function(s){  
+        paste(fqmat[fqmat$samplename == s, c("project","subproject"), drop = FALSE][1,], collapse="-")}))        
+  }
+  if(missing(sampbam)) sampbam <- tmp_sampbam ## if missing them replace from fqmat
+  if(missing(out_prefix))
+    out_prefix = sprintf("%s___%s", basename(file_path_sans_ext(sampbam)), basename(file_path_sans_ext(refbam)))
+  out_mat = cbind(project = project, samplename = x[1,], refname = x[,2], sampbam = sampbam, refbam = refbam, 
+                  db_sampleid = db_sampleid, db_refid = db_refid, out_prefix = out_prefix)
+  write.table(out_mat, file=outfile, sep="\t", quote=FALSE, row.names=FALSE)
+  return(out_mat)
+}
+
+
+
