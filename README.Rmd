@@ -18,6 +18,6 @@ Rscript --version
 ```{r install, eval=FALSE}
 install.packages('devtools')
 require(devtools)
-install_github(repo = 'ngsutils', username = 'sahilseth')
+install_github(repo = 'ngsflows', username = 'sahilseth')
 
 ```

@@ -3,7 +3,33 @@
 ## cpu_realign=4,  java_mem_realign= "-Xmx4g", ## scatter 8 per node
 ## cpu_baserecalib=4,  java_mem_baserecalib= "-Xmx4g", ## scatter 8 per node nct=8
 ## cpu_printreads=4,  java_mem_printreads= "-Xmx4g", ## scatter 8 per node nct=8
-
+#' Flow following Broad's best practices for variant calling, starting from sorted bam
+#' 
+#' Flow following Broad's best practices for variant calling, starting from sorted bam
+#' 
+#' @param inbam
+#' @param outbam
+#' @param q_obj
+#' @param java_exe
+#' @param java_tmp
+#' @param cpu_markdup
+#' @param java_mem_markdup
+#' @param cpu_target
+#' @param java_mem_target
+#' @param cpu_realign
+#' @param java_mem_realign
+#' @param cpu_baserecalib
+#' @param java_mem_baserecalib
+#' @param cpu_printreads
+#' @param java_mem_printreads
+#' @param gatk_jar
+#' @param picard_dir
+#' @param reffa
+#' @param gatk_target_opt
+#' @param gatk_realign_opt
+#' @param gatk_baserecalib_opt
+#' @param printreads_opt
+#' @export
 bam_preprocess <- function(inbam, outbam, q_obj,
                            java_exe = "/scratch/rists/hpcapps/x86_64/jdk/jdk1.7.0/bin/java",
                            java_tmp = "tmp",

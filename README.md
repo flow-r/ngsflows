@@ -1,7 +1,3 @@
-
-
-
-
 ### Setup
 ```
 wget ... and download the reference data and files
@@ -16,5 +12,5 @@ Rscript --version
 ```r
 install.packages('devtools')
 require(devtools)
-install_github(repo = 'ngsutils', username = 'sahilseth')
+install_github(repo = 'ngsflows', username = 'sahilseth')
 ```

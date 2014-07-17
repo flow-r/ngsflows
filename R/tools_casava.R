@@ -12,7 +12,6 @@ initialize_casava_paths <- function(runid,intPath=intPath){
     return(ass)
 }
 
-## runid="120829_SN1222_0146_BD1DWRACXX"
 create_casava_sample_sheet <- function(runid,intPath=getOption("ngs.intPath")){
     ass <- getOption("ngs.NGSAssignment")
     if(is.null(ass)){options(ngs.NGSAssignment=getAssignment(runid));ass <- getOption("ngs.NGSAssignment")}
