@@ -16,7 +16,6 @@ split.names.fastq <- function(files,format="$samplename$_$index$_L00$lane$_R$rea
 }
 split_names_fastq=split.names.fastq
 
-<<<<<<< HEAD
 #' Creates a sample sheet file names in the provided folder
 #'
 #' This function would check for files ending in fastq.gz, fq.gz, fastq, fq.
@@ -71,36 +70,6 @@ create_sample_sheet <- function(path, project, subproject, runid, format,
   if(!file.exists(outpath) & outpath!='.') dir.create(outpath) ## is X exists and not 'blank'
   write.csv(fq_mat, file=outfile, row.names=FALSE)
   return(fq_mat)
-=======
-create_sample_mat <- function(path, project, subproject, runid, outpath, format,
-                              pattern = "fastq.gz|fq.gz|fastq|fq"){
-    fqs <- unlist(lapply(path, list.files, pattern = pattern,full.names=TRUE,recursive=TRUE))
-    if(missing(project)) project = basename(path)
-    if(missing(subproject)) subproject = substr(project, 1, 2)
-    if(missing(outpath)) outpath = "." ## folder for samplemat
-    if(missing(runid)) runid = basename(dirname(dirname(dirname(fqs[1])))) ## runid
-    if(missing(format)){
-        if(grepl("_S1.*fastq.gz",fqs[1])){ ## miseq output
-            ## ------ casava output
-            format <- "$samplename$_S[0-9]*_L00$lane$_R$read$_$num$.fastq.gz"
-        }else if(grepl(".*_([ATGC]*|NoIndex).*L00([0-9]*)_R([0-9]*)_([0-9]*).fastq.gz",basename(fqs[1]))){
-            ## ------ casava output
-            format <- "$samplename$_$index$_L00$lane$_R$read$_$num$.fastq.gz"
-        }
-    }
-    fq_mat <- split_names_fastq(files = fqs, format = format)
-    ## ------- cleanup things
-    fq_mat$samplename <- gsub("_","",fq_mat$samplename)
-    out_basename <- sprintf("%s-%s-%s_%s", project, subproject, fq_mat$samplename, runid)
-    sorted_bam <- sprintf("%s_rg.sorted.bam",out_basename)
-    recal_bam <- sprintf("%s_rg.sorted.recalibed.bam", out_basename)
-    fq_mat <- cbind(fq_mat, out_basename, sorted_bam, recal_bam, runid, project, subproject)
-    fq_mat = fq_mat[!grepl("Undetermined", fq_mat$samplename), ] ## remove undermined
-    if(!file.exists(outpath)) dir.create(outpath)
-    write.csv(fq_mat, sprintf("%s/%s_%s_%s_sample_mat.csv", outpath, project, subproject,
-                              runid), row.names=FALSE)
-    return(fq_mat)
->>>>>>> 691b9f80c542b82a34fc450e7b91cd904e7a50a5
 }
 
 #' check_fastq_sheet
@@ -133,16 +102,7 @@ read_sample_sheet <- function(x){
 }
 
 if(FALSE){
-<<<<<<< HEAD
-  path = "/scratch/iacs/iacs_dep/sseth/data/mt_scc/Project_VC_SCC-NI56-1"
-  runid= "140626_M01692_0046_000000000-A99M8"
-  runid="140627_M01692_0047_000000000-A9J0V";
-  #debug(create_sample_mat)
-  
-  path=sprintf("/scratch/iacs/gcc/leveli/%s",runid)
-  fq_mat <- create_sample_mat(path,project="ANDY",subproject="Futreal-AS", runid=runid,
-                              outpath="~/flows/ANDY-Futreal-AS")
-=======
+
     path = "/scratch/iacs/iacs_dep/sseth/data/mt_scc/Project_VC_SCC-NI56-1"
     runid= "140626_M01692_0046_000000000-A99M8"
     runid="140627_M01692_0047_000000000-A9J0V";
@@ -151,5 +111,4 @@ if(FALSE){
     path=sprintf("/scratch/iacs/gcc/leveli/%s",runid)
     fq_mat <- create_sample_mat(path,project="ANDY",subproject="Futreal-AS", runid=runid,
                                 outpath="~/flows/ANDY-Futreal-AS")
->>>>>>> 691b9f80c542b82a34fc450e7b91cd904e7a50a5
 }
