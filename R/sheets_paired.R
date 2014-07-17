@@ -23,6 +23,7 @@ read_paired_samplesheet <- function(x, ...){
 }
 
 ## x is a object from seqan_tooling
+<<<<<<< HEAD
 #' @title create_tooling_paired_samplesheet
 #' @description create_tooling_paired_samplesheet
 #' @param x
@@ -30,6 +31,8 @@ read_paired_samplesheet <- function(x, ...){
 #' @param tumor.only
 #' @param normal.only
 #' @export
+=======
+>>>>>>> 691b9f80c542b82a34fc450e7b91cd904e7a50a5
 create_tooling_paired_samplesheet <- function(x, outfile, tumor.only=FALSE, normal.only=FALSE){
     colnames(x)  <- tolower(colnames(x))
     project=apply(x[,c("project","subproject")], 1, paste, collapse="-")
@@ -65,10 +68,8 @@ create_paired_samplesheet <- function(x, fqmat,
                                       sampbam, refbam, ## full paths to bam files
                                       outfile, db_sampleid = 0, db_refid = 0, out_prefix, 
                                       bampath, ## to be supplied if fastq sheet is supplied
-                                      ## optional, required only when fqmat not provided
                                       project = 'project', 
                                       normal_bam_01 = "/scratch/iacs/ngs/commonNormalBam/ANDY-Hetero-JZ-330-10-01_130425_SN208_0465_BD2705ACXX_merged2_rg.sorted.recalibed.bam"){
-  ## if fqmat is available
   ## if fqmat is available we will get things from here
   if(!missing(fqmat)){
       tmp <- unlist(sapply(x[,1], function(s) fqmat[fqmat$samplename == s, "recal_bam"][1]))
@@ -80,13 +81,20 @@ create_paired_samplesheet <- function(x, fqmat,
       }))    
       project <- unlist(sapply(x[,1], function(s){  
         paste(fqmat[fqmat$samplename == s, c("project","subproject"), drop = FALSE][1,], collapse="-")}))        
+<<<<<<< HEAD
   }else{ ## if no fastq sheet is supplied
     refbam <- ifelse(x[,2] == "common_normal_01", normal_bam_01, refbam)
+=======
+>>>>>>> 691b9f80c542b82a34fc450e7b91cd904e7a50a5
   }
   if(missing(sampbam)) sampbam <- tmp_sampbam ## if missing them replace from fqmat
   if(missing(out_prefix))
     out_prefix = sprintf("%s___%s", basename(file_path_sans_ext(sampbam)), basename(file_path_sans_ext(refbam)))
+<<<<<<< HEAD
   out_mat = cbind(project = project, samplename = x[,1], refname = x[,2], sampbam = sampbam, refbam = refbam, 
+=======
+  out_mat = cbind(project = project, samplename = x[1,], refname = x[,2], sampbam = sampbam, refbam = refbam, 
+>>>>>>> 691b9f80c542b82a34fc450e7b91cd904e7a50a5
                   db_sampleid = db_sampleid, db_refid = db_refid, out_prefix = out_prefix)
   write.table(out_mat, file=outfile, sep="\t", quote=FALSE, row.names=FALSE)
   return(out_mat)
