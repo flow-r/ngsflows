@@ -1,15 +1,22 @@
+#' @title split.names.fastq
+#' @description split.names.fastq
+#' given a format split the files provided. Tried and tested on fastq files
+#' @param files
+#' @param format
+#' @export
 split.names.fastq <- function(files,format="$samplename$_$index$_L00$lane$_R$read$_$num$.fastq.gz"){
   ## process format:
-  f <- gsub("\\$samplename\\$","(.*)",format)
-  f <- gsub("\\$index\\$","([ATGC]*|NoIndex)",f)
-  f <- gsub("\\$lane\\$","([0-9]*)",f)
-  f <- gsub("\\$read\\$","([0-9]*)",f)
-  f <- gsub("\\$num\\$","([0-9]*)",f)
+  fmt <- gsub("\\$samplename\\$","(.*)",format)
+  fmt <- gsub("\\$index\\$","([ATGC]*|NoIndex)", fmt)
+  fmt <- gsub("\\$lane\\$","([0-9]*)", fmt)
+  fmt <- gsub("\\$read\\$","([0-9]*)", fmt)
+  fmt <- gsub("\\$num\\$","([0-9]*)", fmt)
   ## column names
-  out=strsplit(format,"\\$")[[1]]
-  cols=out[seq(2,length(out),by=2)]
+  out = strsplit(format,"\\$")[[1]]
+  ## every second one would be a variable
+  cols = out[seq(2,length(out), by=2)]
   repl <- paste("\\",1:length(cols),sep="",collapse=",")
-  mat <- gsub(f,repl,basename(files))
+  mat <- gsub(fmt, repl,basename(files))
   mat <- data.frame(cbind(do.call(rbind,strsplit(mat,",")),files))
   colnames(mat) <- c(cols,"files")
   return(mat)
@@ -27,6 +34,7 @@ split_names_fastq=split.names.fastq
 #' @param outfile name of the output csv files \emph{optional}
 #' @param format the format for names of fastq files, we have defaults for CASAVA and miSeq
 #' @param pattern extensions this function will look for \emph{optional}
+#' @param fix.names change the sample names such that they are acceptable as column names for R
 #' @keywords samplesheet fastq casava
 #' @export
 #' @examples
@@ -34,7 +42,7 @@ split_names_fastq=split.names.fastq
 #' create_sample_mat(levelipath)
 #' }
 create_sample_sheet <- function(path, project, subproject, runid, format,
-                                pattern = "fastq.gz|fq.gz|fastq|fq", outfile){
+                                pattern = "fastq.gz|fq.gz|fastq|fq", outfile, fix.names = FALSE){
   fqs <- unlist(lapply(path, list.files, pattern = pattern,full.names=TRUE,recursive=TRUE))
   if(missing(project)) {project = basename(path); cat("\nDetecting project name:", project)}
   if(missing(subproject)){subproject = substr(project, 1, 2); cat("\nDetecting subproject:", subproject)}
@@ -58,18 +66,21 @@ create_sample_sheet <- function(path, project, subproject, runid, format,
     }
   }
   fq_mat <- split_names_fastq(files = fqs, format = format)
-  ## ------- cleanup things
-  fq_mat$samplename <- gsub("_","",fq_mat$samplename)
+  ## ------- cleanup things: use _ to seperate out other things
+  fq_mat$samplename <- gsub("_",".",fq_mat$samplename)
+  #idx.mat$samplename = gsub("-|\\.| |,", "_", idx.mat$samplename)
+  if(fix.names)
+    fq_mat$samplename = make.names(fq_mat$samplename)
   cat("\nThere are", length(unique(fq_mat$samplename)), "samples in this folder")
   out_basename <- sprintf("%s-%s-%s_%s", project, subproject, fq_mat$samplename, runid)
-  sorted_bam <- sprintf("%s_rg.sorted.bam",out_basename)
-  recal_bam <- sprintf("%s_rg.sorted.recalibed.bam", out_basename)
-  fq_mat <- cbind(fq_mat, out_basename, sorted_bam, recal_bam, runid, project, subproject)
+#   sorted_bam <- sprintf("%s_rg.sorted.bam",out_basename)
+#   recal_bam <- sprintf("%s_rg.sorted.recalibed.bam", out_basename)
+  fq_mat <- cbind(fq_mat, out_basename, runid, project, subproject)
   fq_mat = fq_mat[!grepl("Undetermined", fq_mat$samplename), ] ## remove undermined
   outpath = dirname(outfile)
   if(!file.exists(outpath) & outpath!='.') dir.create(outpath) ## is X exists and not 'blank'
-  write.csv(fq_mat, file=outfile, row.names=FALSE)
-  return(fq_mat)
+  write.csv(fq_mat, file = outfile, row.names=FALSE)
+  return(fq_mat = fq_mat)
 }
 
 #' check_fastq_sheet

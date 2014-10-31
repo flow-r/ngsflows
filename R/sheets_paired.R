@@ -1,5 +1,3 @@
-
-require(tools)
 #' @title read_paired_samplesheet
 #' @description read_paired_samplesheet
 #' @param x
@@ -61,11 +59,12 @@ create_tooling_paired_samplesheet <- function(x, outfile, tumor.only=FALSE, norm
 #' @param project
 #' @param normal_bam_01
 #' @export
+#' @importFrom tools file_path_sans_ext
 create_paired_samplesheet <- function(x, fqmat, 
                                       sampbam, refbam, ## full paths to bam files
                                       outfile, db_sampleid = 0, db_refid = 0, out_prefix, 
                                       bampath, ## to be supplied if fastq sheet is supplied
-                                      project = 'project', 
+                                      project = 'project',  subproject = 'subproject',
                                       normal_bam_01 = "/scratch/iacs/ngs/commonNormalBam/ANDY-Hetero-JZ-330-10-01_130425_SN208_0465_BD2705ACXX_merged2_rg.sorted.recalibed.bam"){
   ## if fqmat is available we will get things from here
   if(!missing(fqmat)){
@@ -84,7 +83,7 @@ create_paired_samplesheet <- function(x, fqmat,
   if(missing(sampbam)) sampbam <- tmp_sampbam ## if missing them replace from fqmat
   if(missing(out_prefix))
     out_prefix = sprintf("%s___%s", basename(file_path_sans_ext(sampbam)), basename(file_path_sans_ext(refbam)))
-  out_mat = cbind(project = project, samplename = x[1,], refname = x[,2], sampbam = sampbam, refbam = refbam, 
+  out_mat = cbind(project = project, samplename = x[,1], refname = x[,2], sampbam = sampbam, refbam = refbam, 
                   db_sampleid = db_sampleid, db_refid = db_refid, out_prefix = out_prefix)
   write.table(out_mat, file=outfile, sep="\t", quote=FALSE, row.names=FALSE)
   return(out_mat)

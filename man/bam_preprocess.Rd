@@ -23,15 +23,15 @@ bam_preprocess(inbam, outbam, q_obj,
 
 \item{outbam}{}
 
-\item{q_obj}{}
+\item{q_obj}{is provided output is a flow object, else a list of commands to run}
 
-\item{java_exe}{}
+\item{java_exe}{path to java}
 
-\item{java_tmp}{}
+\item{java_tmp}{path to java tmp, can leave blank}
 
-\item{cpu_markdup}{}
+\item{cpu_markdup}{cpus to be reserved, default 4}
 
-\item{java_mem_markdup}{}
+\item{java_mem_markdup}{memory provided to java}
 
 \item{cpu_target}{}
 
@@ -64,6 +64,9 @@ bam_preprocess(inbam, outbam, q_obj,
 \item{printreads_opt}{}
 }
 \description{
+This function provides a list of commands to run
+}
+\details{
 Flow following Broad's best practices for variant calling, starting from sorted bam
 }
 

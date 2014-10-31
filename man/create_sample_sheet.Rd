@@ -4,7 +4,7 @@
 \title{Creates a sample sheet file names in the provided folder}
 \usage{
 create_sample_sheet(path, project, subproject, runid, format,
-  pattern = "fastq.gz|fq.gz|fastq|fq", outfile)
+  pattern = "fastq.gz|fq.gz|fastq|fq", outfile, fix.names = FALSE)
 }
 \arguments{
 \item{path}{path to the fastq files}
@@ -20,6 +20,8 @@ create_sample_sheet(path, project, subproject, runid, format,
 \item{pattern}{extensions this function will look for \emph{optional}}
 
 \item{outfile}{name of the output csv files \emph{optional}}
+
+\item{fix.names}{change the sample names such that they are acceptable as column names for R}
 }
 \description{
 This function would check for files ending in fastq.gz, fq.gz, fastq, fq.

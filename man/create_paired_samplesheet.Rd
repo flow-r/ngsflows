@@ -5,6 +5,7 @@
 \usage{
 create_paired_samplesheet(x, fqmat, sampbam, refbam, outfile, db_sampleid = 0,
   db_refid = 0, out_prefix, bampath, project = "project",
+  subproject = "subproject",
   normal_bam_01 = "/scratch/iacs/ngs/commonNormalBam/ANDY-Hetero-JZ-330-10-01_130425_SN208_0465_BD2705ACXX_merged2_rg.sorted.recalibed.bam")
 }
 \arguments{
