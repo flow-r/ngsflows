@@ -2,7 +2,7 @@
 
 if(FALSE){
   fqs1 = ""
-  flow_def = 
+  flow_def = ""
 }
 
 meta_flow <- function(fqs1, fqs2, 
@@ -30,7 +30,6 @@ meta_flow <- function(fqs1, fqs2,
   java_mem <- "-Xmx8g";
   cmd_merge <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s/MergeSamFiles.jar %s OUTPUT=%s ASSUME_SORTED=TRUE VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true USE_THREADING=true",
                        java_exe, java_mem, java_tmp, picard_dir, bam_list, mergebam)
-    
- return() 
+  return() 
 }
 

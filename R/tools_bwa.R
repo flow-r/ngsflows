@@ -23,14 +23,17 @@ bwa <- function(fastq1 = '', fastq2 = '', bwa_exe = 'bwa', bwa_command = c("mem"
   bwa_command <- match.arg(bwa_command)
   if(bwa_command == "mem" & paired_end){
     cmds <- sprintf("%s mem %s %s %s %s",
-                   bwa_exe, bwa_opt, bwa_ref, fastq1, fastq2)
+                    bwa_exe, bwa_opt, bwa_ref, fastq1, fastq2)
   }else if(bwa_command == "mem" & !paired_end){
     cmds <- sprintf("%s mem %s %s",
-                   bwa_exe, bwa_opt, bwa_ref, fastq1)
+                    bwa_exe, bwa_opt, bwa_ref, fastq1)
   }
   object <- new("bwa", bwa_command=bwa_command, cmds=cmds, name = "bwa", ...)
   return(object)
 }
 
-bwa()@cmds
-#cmd_aln1 <- paste(bwapath, "/bwa aln ",bwa_aln_opts," ",reflib," ",fqs1,sep = "")
+if(FALSE){
+  bwa()@cmds
+  #cmd_aln1 <- paste(bwapath, "/bwa aln ",bwa_aln_opts," ",reflib," ",fqs1,sep = "")
+  
+}

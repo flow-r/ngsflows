@@ -1,3 +1,8 @@
+##
+## Author: Sahil Seth
+## Date:   2014/09/18
+## sseth@mdanderson.org
+
 #' @title split.names.fastq
 #' @description split.names.fastq
 #' given a format split the files provided. Tried and tested on fastq files
@@ -42,13 +47,23 @@ split_names_fastq=split.names.fastq
 #' create_sample_mat(levelipath)
 #' }
 create_sample_sheet <- function(path, project, subproject, runid, format,
-                                pattern = "fastq.gz|fq.gz|fastq|fq", outfile, fix.names = FALSE){
+                                fix.names = FALSE,  fix.names.char = "-",
+                                out_sep = c("\t", ","),
+                                include.undetermined = FALSE,
+                                pattern = "fastq.gz|fq.gz|fastq|fq", outfile){
+  message("Fetching path(s) for fastq files...\n")
   fqs <- unlist(lapply(path, list.files, pattern = pattern,full.names=TRUE,recursive=TRUE))
+  if(!include.undetermined) fqs <- grep("Undetermined", fqs, value = TRUE, invert = TRUE)
+  if(length(fqs) == 0) stop("No fastq files detected in this folder\n")
   if(missing(project)) {project = basename(path); cat("\nDetecting project name:", project)}
   if(missing(subproject)){subproject = substr(project, 1, 2); cat("\nDetecting subproject:", subproject)}
   if(missing(runid)){runid = basename(dirname(dirname(dirname(fqs[1])))) ; cat("\nDetecting runid:", runid)}## runid
+  out_sep = match.arg(out_sep)
   if(missing(outfile)){
-    outfile = sprintf("%s_%s_%s_sample_mat.csv", project, subproject, runid);
+    outfile = sprintf("%s_%s_%s_sample_mat.%s", project, subproject, runid, 
+                      switch(out_sep, 
+                      "," = "csv",
+                      "\t" = "tsv"))
     cat("\nDetecting outfile:", outfile)
   }## folder for samplemat
   if(missing(format)){
@@ -66,49 +81,65 @@ create_sample_sheet <- function(path, project, subproject, runid, format,
     }
   }
   fq_mat <- split_names_fastq(files = fqs, format = format)
-  ## ------- cleanup things: use _ to seperate out other things
-  fq_mat$samplename <- gsub("_",".",fq_mat$samplename)
-  #idx.mat$samplename = gsub("-|\\.| |,", "_", idx.mat$samplename)
-  if(fix.names)
-    fq_mat$samplename = make.names(fq_mat$samplename)
+    if(fix.names){
+        fq_mat$sample_id_orig = fq_mat$sample_id
+        fq_mat$sample_id = fix_names(fq_mat$sample_id, char = fix.names.char)
+        if(fix.names.char == ".") ## . opt style 2, good for data.frames
+            fq_mat$sample_id = make.names(fq_mat$sample_id)
+        ## ------- cleanup things: use _ to seperate out other things
+    }
   cat("\nThere are", length(unique(fq_mat$samplename)), "samples in this folder")
   out_basename <- sprintf("%s-%s-%s_%s", project, subproject, fq_mat$samplename, runid)
-#   sorted_bam <- sprintf("%s_rg.sorted.bam",out_basename)
-#   recal_bam <- sprintf("%s_rg.sorted.recalibed.bam", out_basename)
+  ## sorted_bam <- sprintf("%s_rg.sorted.bam",out_basename)
+  ## recal_bam <- sprintf("%s_rg.sorted.recalibed.bam", out_basename)
   fq_mat <- cbind(fq_mat, out_basename, runid, project, subproject)
   fq_mat = fq_mat[!grepl("Undetermined", fq_mat$samplename), ] ## remove undermined
   outpath = dirname(outfile)
   if(!file.exists(outpath) & outpath!='.') dir.create(outpath) ## is X exists and not 'blank'
-  write.csv(fq_mat, file = outfile, row.names=FALSE)
+  write.table(fq_mat, file = outfile, row.names=FALSE, sep = out_sep, quote = FALSE)
   return(fq_mat = fq_mat)
 }
 
 #' check_fastq_sheet
 #' @param mat
 #' @export
-check_fastq_sheet <- function(mat){
-  cat("There are", length(unique(mat$samplename)), "samples in this dataset\n")
-  dat_list <- split.data.frame(mat, mat$samplename)
-  tmp <- sapply(1:length(dat_list), function(i){
-    tmp <- tapply(dat_list[[i]]$files, dat_list[[i]]$read, length)
-    if(diff(tmp) != 0) stop("Number of fastq files are not the same in",
-                            dat_list[[i]]$samplename[1], "sample")
-    return(0)
-  })
+check_fastq_sheet <- function(mat, id_column = "sample_id", file_column = "files", read_column = "read"){
+  cat("There are", length(unique(mat[, id_column])), "samples in this dataset\n")
+  dat_list <- split.data.frame(mat, mat[, id_column])
+  if(length(mat$files) > 0){
+    tmp <- sapply(1:length(dat_list), function(i){
+      tmp <- tapply(dat_list[[i]][, file_column], dat_list[[i]][, read_column], length)
+      ## check in case of paired end
+      if(length(tmp) > 1){
+        if(diff(tmp) != 0) stop("Number of fastq files are not the same in",
+                                dat_list[[i]][, id_column][1], "sample")
+      }
+      return(0)
+    })}
 }
 
 #' read_sample_sheet
 #' @param x
 #' @export
-read_sample_sheet <- function(x){
-  ext <- file_ext(x)
-  if(ext=="tsv"){
-    mat <- read.table(x, as.is=TRUE, sep="\t", header=TRUE)
+read_sample_sheet <- function(x, id_column = "sample_id"){
+  ext <- tools:::file_ext(x)
+  if(ext %in% c("tsv", "txt")){
+    mat <- read.table(x, as.is=TRUE, sep="\t", header=TRUE, stringsAsFactors = FALSE,
+                      comment.char = '#', strip.white=TRUE, blank.lines.skip=TRUE, quote = "")
   }else if(ext=="csv"){
-    mat <- read.csv2(x, as.is=TRUE, comment.char = '#', strip.white=TRUE,
-                     blank.lines.skip=TRUE, sep=",", header=TRUE)
+    mat <- read.csv2(x, as.is=TRUE, sep=",", header=TRUE, stringsAsFactors = FALSE,
+                     comment.char = '#', strip.white=TRUE, blank.lines.skip=TRUE, quote = "")
   }
-  check_fastq_sheet(mat)
+  else if(ext=="xlsx"){
+    library(xlsx)
+    mat <- xlsx:::read.xlsx2(file = x, sheetName = "sample_sheet", startRow = 2, stringsAsFactors = FALSE)
+  }
+  else{
+    cat("Sorry we do not recognize this file format", ext, "please use tsv, csv or xlsx2 (sheetname: sample_sheet)")
+  }
+  ### ------ remove blank rows and columns
+  mat <- mat[!mat[, id_column] %in% c("", NA), !grepl("^X", colnames(mat))]
+  check_fastq_sheet(mat, id_column = id_column)
   return(mat)
 }
 

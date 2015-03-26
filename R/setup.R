@@ -16,7 +16,10 @@ processParams <- function(file,pkgname="Rngsutils",verbose=FALSE){
   return(params)
 }
 
-.onAttach <- function(libname, pkgname){
-#   params <- try(processParams(file.path(libname, pkgname, "files","default.params"), 
-#                               pkgname,verbose=FALSE))
+if(FALSE){
+ # .onAttach <- function(libname, pkgname){
+    #   params <- try(processParams(file.path(libname, pkgname, "files","default.params"), 
+    #                               pkgname,verbose=FALSE))
+#  }
+  
 }

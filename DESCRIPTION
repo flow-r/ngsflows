@@ -1,16 +1,14 @@
 Package: ngsflows
 Type: Package
 Title: R wrappers for sequencing data
-Version: 0.4.3
-Date: 2013-06-19
+Version: 0.3.8
+Date: 2014-12-08
 Author: Sahil Seth
 Maintainer: Sahil Seth <sseth@mdanderson.org>
 Depends:
     utils
 Imports:
-    flow,
-Suggests:
-    ngsflows
+    flowr,
 Description: R utilities to play with Next (2nd) Generation Sequencing data.
     More specifically this serves as a wrapper for tools like: GATK & PICARD
     etc.
