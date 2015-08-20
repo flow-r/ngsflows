@@ -1,0 +1,52 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r}
+library(params)
+require(ngsflows)
+
+wd='/rsrch1/iacs/tmp/illumina_platinum/50x/NA12877/splt'
+out = create_fq_sheet(x=wd, format="{{samplename}}_{{read}}.{{num}}.fastq", ext = "fastq")
+params::kable(head(out))
+
+```
+
+
+## read the files
+```{r}
+wd = "/rsrch2/iacs/ngs_runs/150806_SN1120_0348_BC79KEACXX/fastqs/Y76I8n1Y76/Project_Pancreatic-MS132/Sample_GLizee-Pancreatic-MS132-MP013normalDNA"
+out = create_fq_sheet(x=wd)
+params::kable(head(out))
+```
+
+## create commands for alignment
+```{r}
+
+load_opts("~/Dropbox/public/github_ngsflows/inst/conf/ngsflows_mda.conf", check = FALSE)
+
+source(fetch_pipes('fastq_bam_bwa')$pip)
+
+fqs1 = subset(out, read == 1)$file
+fqs2 = subset(out, read == 2)$file
+
+#debug(fastq_bam_bwa)
+f_merge = fastq_bam_bwa(fqs1, fqs2, samplename = "MS132")
+f_preproc = bam_preprocess(f_merge$outfile)
+
+#View(f_merge$flowmat)
+
+
+```
+
+```{r setup, include=FALSE}
+## testing bam preprocess
+
+
+bam = "/rsrch2/iacs/ngs_runs/150804_SN1440_0223_AC7B2DACXX/bams/JdeGroot-GBMMOON-MS18-15647-T_C7B2DACXX-1-GCCAAGAC.bwa_recalibed.bam"
+#debug(bam_preprocess)
+preproc = bam_preprocess(bam)
+
+
+```

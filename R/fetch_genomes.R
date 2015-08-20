@@ -1,26 +1,32 @@
 
-#' @title genomes_fetch
-#' @description genomes_fetch
+#' @title fetch_genomes
+#' @description fetch_genomes
 #' @param base_url
 #' @param species
 #' @param src
 #' @param build
-#' @param ... passed onto \link{genomes_fetch}
+#' @param ... passed onto \link{fetch_genomes}
+#' 
+#' 
 #' @export
-#' @importFrom RCurl url.exists
+#' @importFrom curl curl_download
+#' 
+#' 
 #' @examples \donotrun{
 #' genomes_fetch(species = Homo_sapiens, src = 'NCBI', build = 'build37.2')
 #' }
-genomes_fetch <- function(genome_path = "~/flowr/genomes", ...){
+fetch_genomes <- function(genome_path = "~/flowr/genomes", verbose = FALSE,
+                          ...){
   if(!file.exists(genome_path)) dir.create(genome_path, recursive = TRUE)
   setwd(genome_path)
   ## ---------- if any of these are missing call fetch to check
-  tmp = genomes_avail(...)
+  tmp = avail_genomes(...)
   if(tmp$type == "tar"){
     url = tmp$url
     tarfl = tmp$lst
-    message("Downloading tar...", tarfl)
-    tmp <- getURL(url)
+    message("Downloading tar...", tarfl, " from ", url)
+    #tmp <- getURL(url, verbose=verbose)
+    curl_download(file.path(url, tarfl), tarfl, quiet = !verbose)
     message("Extracting tar...", tarfl)
     message("All one with", tarfl)
     invisible()
@@ -28,8 +34,8 @@ genomes_fetch <- function(genome_path = "~/flowr/genomes", ...){
 }
 
 
-#' @title genomes_avail
-#' @description genomes_avail
+#' @title avail_genomes
+#' @description avail_genomes
 #' @param species species
 #' @param src src
 #' @param build build
@@ -38,8 +44,8 @@ genomes_fetch <- function(genome_path = "~/flowr/genomes", ...){
 #' @export
 #' @importFrom RCurl getURL
 #' @examples
-#' gen = genomes_avail(species = 'Homo_Sapiens', from = 'igenomes')
-genomes_avail <- function(species, src, build,
+#' gen = avail_genomes(species = 'Homo_Sapiens', from = 'igenomes')
+avail_genomes <- function(species, src, build,
                           from = "igenomes",
                           verbose = FALSE,
                           base_url = "ftp://igenome:G3nom3s4u@ussd-ftp.illumina.com", ...){
@@ -64,6 +70,7 @@ genomes_avail <- function(species, src, build,
   if(verbose) message(url)
   lst = getURL(sprintf("%s/", url), dirlistonly = TRUE)
   message(lst)
+  message("Example:\nfetch_genomes species=Homo_sapiens src=NCBI build=build37.2")
   invisible(list(lst = lst, url = url, type = type))
 }
 
