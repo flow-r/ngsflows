@@ -1,14 +1,19 @@
 Package: ngsflows
 Type: Package
-Title: R wrappers for sequencing data
-Version: 0.3.8
+Title: Robust Pipelines for Next-Generation Sequencing Analysis; A Companion Package for flowr
+Version: 0.3.9
 Date: 2014-12-08
 Author: Sahil Seth
 Maintainer: Sahil Seth <sseth@mdanderson.org>
 Depends:
-    flowr,
+    flowr  (>= 0.9.7.10),
     utils
-Description: R utilities to play with Next (2nd) Generation Sequencing data.
-    More specifically this serves as a wrapper for tools like: GATK & PICARD
-    etc.
+Imports:
+  RCurl,
+  curl
+Suggests:
+  Rsamtools
+Description: 
+  Provides a host of modules and pipelines supporting a host of genomics data ranging from 
+  whole genome/exome sequencing, RNA-Seq and chipseq etc.
 License: GPL
