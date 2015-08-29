@@ -2,32 +2,30 @@
 % Please edit documentation in R/bam_preprocess.R
 \name{bam_preprocess}
 \alias{bam_preprocess}
-\title{Flow following Broad's best practices for variant calling, starting from sorted bam}
+\title{Pre-process bam files following Broad's best practices for variant calling, starting from aligned BAM file}
 \usage{
-bam_preprocess(inbam, outbam, samplename = "samp", split_by_chr = FALSE,
-  java_exe = get_opts("java_exe"), java_tmp = get_opts("java_tmp"),
-  cpu_markdup = 4, mem_markdup = "-Xmx8g", cpu_target = 16,
-  mem_target = "-Xmx32g", cpu_realign = 8, mem_realign = "-Xmx4g",
-  cpu_baserecalib = 4, mem_baserecalib = "-Xmx4g", cpu_printreads = 4,
+bam_preprocess(x, outfile, samplename = get_opts("samplename"),
+  split_by_chr = FALSE, java_exe = get_opts("java_exe"),
+  java_tmp = get_opts("java_tmp"), cpu_markdup = 1,
+  mem_markdup = "-Xmx8g", cpu_target = get_opts("cpu_target"),
+  mem_target = "-Xmx32g", cpu_realign = get_opts("cpu_realign"),
+  mem_realign = "-Xmx4g", cpu_baserecalib = get_opts("cpu_baserecalib"),
+  mem_baserecalib = "-Xmx4g", cpu_printreads = get_opts("cpu_printreads"),
   mem_printreads = "-Xmx4g", gatk_jar = get_opts("gatk_jar"),
   picard_dir = get_opts("picard_dir"), ref_fasta = get_opts("ref_fasta"),
   gatk_target_opts = get_opts("gatk_target_opts"),
-  gatk_realign_opts = get_opts("gatk_baserecalib_opts"),
+  gatk_realign_opts = get_opts("gatk_realign_opts"),
   gatk_baserecalib_opts = get_opts("gatk_baserecalib_opts"),
-  gatk_printreads_opts = get_opts("gatk_target_opts"))
+  gatk_printreads_opts = get_opts("gatk_printreads_opts"))
 }
 \arguments{
-\item{inbam}{}
-
-\item{outbam}{}
-
 \item{java_exe}{path to java}
 
 \item{java_tmp}{path to java tmp, can leave blank}
 
-\item{cpu_markdup}{cpus to be reserved, default 4}
+\item{cpu_markdup}{not used.}
 
-\item{cpu_target}{}
+\item{cpu_target}{number of threads used for GATK target creation step}
 
 \item{cpu_realign}{}
 
@@ -38,6 +36,10 @@ bam_preprocess(inbam, outbam, samplename = "samp", split_by_chr = FALSE,
 \item{gatk_jar}{}
 
 \item{picard_dir}{}
+
+\item{inbam}{}
+
+\item{outbam}{}
 
 \item{q_obj}{is provided output is a flow object, else a list of commands to run}
 
@@ -62,10 +64,34 @@ bam_preprocess(inbam, outbam, samplename = "samp", split_by_chr = FALSE,
 \item{printreads_opt}{}
 }
 \description{
-This function provides a list of commands to run.
-CPU's refer to number of cores reserved the job. We have a seperate param to control the number of threads the command would use. Example. On a node with 10GB and 10 cores. We may only reserve 10, but use only 2 threads for a 5GB memory command.
+This function provides a wrapper around the best practices described on \href{https://www.broadinstitute.org/gatk/guide/bp_step.php?p=1}{GATK's website}.
+If the link is broken google 'GATK best practices'
+
+This aims to perform the following steps ( for DNA ):
+
+\itemize{
+\item mark duplicates
+\item realign indels
+\item recalibrate bases
+\item current version: \emph{3.4-46}
+}
+
+For RNA GATK recommends a additional step of split n trim, which is not currently supported (contributions welcome !).
+
+\strong{NOTE}:
+
+Some GATK tools use \href{https://www.broadinstitute.org/gatk/guide/article?id=1975}{CPU threads while others use data threads},
+flowr tries to use efficiently make the best use of both/either depending on tool's compatibility.
 }
 \details{
 Flow following Broad's best practices for variant calling, starting from sorted bam
+}
+\examples{
+\\donotrun{
+## load options, including paths to tools and other parameters
+load_opts(fetch_conf("ngsflows.conf"), check = FALSE)
+out = bam_preprocess("my_wex.bam")
+
+}
 }
 
