@@ -28,7 +28,8 @@
 #' @export
 fastq_bam_bwa <- function(
   fqs1, fqs2,
-  samplename){
+  outfile,
+  samplename = get_opts("samplename")){
 
     pipename = match.call()[[1]]
     message("Generating a ", pipename, " flowmat for sample: ", samplename)
@@ -41,13 +42,14 @@ fastq_bam_bwa <- function(
     ##   - a flowmat, which we need to rbind and are done !
     out_bwa = bwa(fqs1 = fqs1, fqs2 = fqs2)
     out_rg = picard_rg(out_bwa$outfiles)
-    mergedbam = sprintf("%s.rg.sorted.bam", samplename) ## feel free to change this !
-    out_merge = picard_merge(out_rg$outfiles, mergedbam = mergedbam)
+    if(missing(outfile))
+      outfile = sprintf("%s.rg.sorted.bam", samplename) ## feel free to change this !
+    out_merge = picard_merge(out_rg$outfiles, mergedbam = outfile)
 
     ##--- merging three flowmats
     flowmat = rbind(out_bwa$flowmat, out_rg$flowmat, out_merge$flowmat)
 
-    return(list(outfile=mergedbam, flowmat = flowmat))
+    return(list(outfile=outfile, flowmat = flowmat))
   }
 
 
