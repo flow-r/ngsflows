@@ -24,6 +24,8 @@ set_opts(
   bam2fastq_exe = "bam2fastq"
 )
 
+
+
 aln_rna_ion <- function(fq,
                         samplename = "mysamp",
                         cutadapt_exe = get_opts("cutadapt_exe"),
@@ -50,6 +52,9 @@ aln_rna_ion <- function(fq,
   assert_that(is.character(picard_dir))
   assert_that(is.character(gtf))
   assert_that(is.character(ref_bowtie2))
+  
+  ## assert that none of the arguments are null
+  check_args()
   
   fq_adap = gsub("fastq$", "adapt_trim.fastq", fq)
   trim = sprintf("%s -m 16 -b %s -o %s %s",
