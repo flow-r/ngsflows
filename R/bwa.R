@@ -75,9 +75,12 @@ bwa <- function(
   bwa_exe = get_opts("bwa_exe"), 
   ref_bwa = get_opts("ref_bwa"),
   bwa_aln_opts = get_opts("bwa_aln_opts"),
+  cpu_bwa_aln = get_opts("cpu_bwa_aln"),
   bwa_sampe_opts = get_opts("bwa_sampe_opts"),
   bwa_samse_opts = get_opts("bwa_samse_opts"),
-  samtools_exe = get_opts("samtools_exe")){
+  samtools_exe = get_opts("samtools_exe")
+  
+  ){
   
   
   ## --- some generic steps which may be done in case of 
@@ -94,30 +97,31 @@ bwa <- function(
 
   ##  ------- Set up all the files which would be used.
   sai_files1 = file.path(gsub(chkfq$ext, "sai", basename(fqs1)))
+  if(paired_end)
+    sai_files2 = file.path( gsub(chkfq$ext, "sai", basename(fqs2)))
   
   ## These would be out files !. ALWAYS USE basename
-  bam_files = file.path(gsub(chkfq$ext,"bam", basename(fqs1)))
-  if(paired_end)
-    sai_files2 = file.path( gsub(chkfq$ext,"sai", basename(fqs2)))
-  
+  bam_files = file.path(gsub(chkfq$ext, "bam", basename(fqs1)))
+  bam_prefix = gsub(".bam", "", bam_files)
+
   ## --- BWA aln and sampe
   #bwa_method <- match.arg(bwa_method)
-  
-  
+
   if(!paired_end){
-    cmd_aln1 = sprintf("%s aln %s %s %s > %s", bwa_exe, bwa_aln_opts, ref_bwa, fqs1, sai_files1)
+    cmd_aln1 = sprintf("%s aln -t %s %s %s > %s", 
+                       bwa_exe, cpu_bwa_aln, bwa_aln_opts, ref_bwa, fqs1, sai_files1)
     cmd_samse = sprintf("%s sampe %s %s %s %s| %s view -Shu - > %s",
-      bwa_exe, bwa_samse_opts, ref_bwa, sai_files1, fqs1, samtools_exe, bam_files)
+      bwa_exe, bwa_samse_opts, ref_bwa, sai_files1, fqs1, samtools_exe, bam_prefix)
     cmds = list(aln1 = cmd_aln1, cmd_samse = cmd_samse)
   }
   
   if(paired_end){
-    cmd_aln1 = sprintf("%s aln %s %s %s > %s", 
-      bwa_exe, bwa_aln_opts, ref_bwa, fqs1, sai_files1)
-    cmd_aln2 = sprintf("%s aln %s %s %s > %s",
-      bwa_exe, bwa_aln_opts, ref_bwa, fqs2, sai_files2)
+    cmd_aln1 = sprintf("%s aln -t %s %s %s %s > %s", 
+      bwa_exe, cpu_bwa_aln, bwa_aln_opts, ref_bwa, fqs1, sai_files1)
+    cmd_aln2 = sprintf("%s aln -t %s %s %s %s > %s",
+      bwa_exe, cpu_bwa_aln, bwa_aln_opts, ref_bwa, fqs2, sai_files2)
     cmd_sampe = sprintf("%s sampe %s %s %s %s %s %s | %s view -Shu - | %s sort - %s",
-      bwa_exe, bwa_sampe_opts, ref_bwa, sai_files1, sai_files2, fqs1, fqs2, samtools_exe, samtools_exe, bam_files)
+      bwa_exe, bwa_sampe_opts, ref_bwa, sai_files1, sai_files2, fqs1, fqs2, samtools_exe, samtools_exe, bam_prefix)
     ## --- make a named list of commands
     cmds = list(aln1 = cmd_aln1, aln2 = cmd_aln2, sampe = cmd_sampe)
   }
