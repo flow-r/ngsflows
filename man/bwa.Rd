@@ -7,6 +7,7 @@
 bwa(fqs1, fqs2, samplename = get_opts("samplename"), paired_end,
   bwa_exe = get_opts("bwa_exe"), ref_bwa = get_opts("ref_bwa"),
   bwa_aln_opts = get_opts("bwa_aln_opts"),
+  cpu_bwa_aln = get_opts("cpu_bwa_aln"),
   bwa_sampe_opts = get_opts("bwa_sampe_opts"),
   bwa_samse_opts = get_opts("bwa_samse_opts"),
   samtools_exe = get_opts("samtools_exe"))
