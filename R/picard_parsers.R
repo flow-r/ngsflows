@@ -104,13 +104,23 @@ picard.parse.IdxStats <- function(file){
 ## 74262 + 0 with mate mapped to a different chr
 ## 21821 + 0 with mate mapped to a different chr (mapQ>=5)
 ##out=lapply(flagstats,ngs.parseFlagstat);write.csv(cbind(bams,mat),file="/speedB/MiSeqData/Moon_QC_batch1/flagstat.csv",quote=FALSE)
-samtools.parseFlagstat <- function(flagstatFile,genomeLen=as.numeric(getOption("ngs.genomeLen")),
-                                   seqLen=as.numeric(getOption("ngs.seqLen")),names.prefix=""){
+parse_flagstat <- function(x, 
+                           genome_length = as.numeric(get_opts("genome_length")),
+                           read_length = as.numeric(get_opts("read_length")),
+                           names.prefix = ""){
   ## GET total, mapped, properly paired, and itself
-  flagstat <- try(readLines(flagstatFile))
+  flagstat <- try(readLines(x))
   as.n=as.numeric
-  names <- c("cov","totalreads", "mapped","paired","read1","read2",
-             "properlypaired","bothmapped","singletons","matetodifferentchr")
+  names <- c("cov",
+             "totalreads",
+             "mapped", 
+             "paired", 
+             "read1",
+             "read2",
+             "properlypaired",
+             "bothmapped",
+             "singletons",
+             "matetodifferentchr")
   names <- paste(names.prefix,names,sep="")
   if(class(flagstat)=="try-error"){
     values <- rep('NA',length(names));names(values) <- names
