@@ -102,6 +102,8 @@ create_fq_sheet <- function(x,
       ext = paste0(ext, "$") ## add a dollar
     
   fqs <- unlist(lapply(x, list.files, pattern = ext, full.names=TRUE,recursive=TRUE))
+  if(length(fqs) == 0)
+    stop("no fastq files found. Please check the folder provided.")
   if(missing(format))
     format <- detect_fq_format2(fqs)
   if(is.null(format))
