@@ -115,16 +115,15 @@ bam_preprocess <- function(x,
   cmd_markdup
   
   ## ------------ realign; SINGLE FILE
-  intervalsfiles <- paste0(chrs_prefix, ".realign.intervals")
-  realignedbams <- paste0(chrs_prefix ,".realigned.bam")
+  intervalsfiles <- paste0(bam_prefix, ".realign.intervals")
   ## ------------ do this for all chrs
   cmd_target <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s -T RealignerTargetCreator -R %s -I %s -o %s -nt %s",
                         java_exe, mem_target, java_tmp, gatk_jar, ref_fasta, dedupbam, 
                         intervalsfiles, cpu_target, gatk_target_opts)
   
-  
+  realignedbams <- paste0(chrs_prefix ,".realigned.bam")
   cmd_realign <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s -T IndelRealigner -R %s -I %s -targetIntervals %s -o %s %s %s",
-                         java_exe, mem_realign, java_tmp, gatk_jar,          ref_fasta, dedupbam, 
+                         java_exe, mem_realign, java_tmp, gatk_jar, ref_fasta, dedupbam, 
                          intervalsfiles, realignedbams, gatk_realign_opts, intervals_opts)
   
   ## ------------ base recalibration
