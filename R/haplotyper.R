@@ -22,9 +22,12 @@ haplotyper <- function(x,
   ## no args should be null
   check_args()  
   
+  pipename = match.call()[[1]]
+  message("Generating a ", pipename, " flowmat for sample: ", samplename)
+  
   bam_prefix <- gsub(".bam", "", basename(x))
   if(split_by_chr){
-    chrs_info <- get_bam_chrs(x)
+    chrs_info <- get_fasta_chrs(ref_fasta)
     chrs_prefix <- paste(bam_prefix, chrs_info, sep = "_")
   }else{
     chrs_prefix = bam_prefix
