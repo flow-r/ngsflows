@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 ## usage: split_fq.sh number_of_chunks fastq
 
 
@@ -7,6 +7,11 @@
 ## --- needs the following variables declared in name space
 chunks=$1
 fq=$2
+
+if [ ! -f $fq ]; then
+    echo "File not found!"
+    exit 1
+fi
 
 echo `date` "; Working on $fq, to be split into $chunks chunks, getting total lines..."
 
