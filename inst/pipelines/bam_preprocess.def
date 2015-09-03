@@ -1,0 +1,6 @@
+jobname	sub_type	prev_jobs	dep_type	queue	memory_reserved	walltime	cpu_reserved	platform	jobid
+markdup	serial	none	none	medium	16384	23:00	1	lsf	6
+target	serial	markdup	serial	medium	16384	23:00	8	lsf	7
+realign	scatter	target	burst	medium	16384	23:00	1	lsf	8
+baserecalib	scatter	realign	serial	medium	16384	23:00	4	lsf	9
+printreads	scatter	baserecalib	serial	medium	16384	23:00	4	lsf	10

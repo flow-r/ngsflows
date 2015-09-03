@@ -52,15 +52,20 @@
 #' @examples \donotrun{
 #' ## load options, including paths to tools and other parameters
 #' load_opts(fetch_conf("ngsflows.conf"), check = FALSE)
-#' out = bam_preprocess("my_wex.bam")
+#' out = bam_preprocess("my_wex.bam", samplename = "samp", split_by_chr = TRUE)
 #' 
 #' }
 bam_preprocess <- function(x, 
-                           outfile, 
                            samplename = get_opts("samplename"),
+                           outfile, 
                            split_by_chr = FALSE,
+                           
                            java_exe = get_opts("java_exe"),
                            java_tmp = get_opts("java_tmp"),
+                           
+                           gatk_jar = get_opts('gatk_jar'),
+                           picard_dir = get_opts('picard_dir'),
+                           
                            cpu_markdup = 1,
                            mem_markdup= "-Xmx8g",
                            cpu_target = get_opts("cpu_target"),  ## not used
@@ -71,17 +76,13 @@ bam_preprocess <- function(x,
                            mem_baserecalib= "-Xmx4g", ## scatter 8 per node nct=8
                            cpu_printreads = get_opts("cpu_printreads"),
                            mem_printreads= "-Xmx4g", ## scatter 8 per node nct=8
-                           
-                           gatk_jar = get_opts('gatk_jar'),
-                           picard_dir = get_opts('picard_dir'),
-                           
+
                            ref_fasta = get_opts('ref_fasta'),
                            
                            gatk_target_opts = get_opts('gatk_target_opts'),
                            gatk_realign_opts = get_opts('gatk_realign_opts'),
                            gatk_baserecalib_opts = get_opts('gatk_baserecalib_opts'),
                            gatk_printreads_opts = get_opts('gatk_printreads_opts')){
-  
   
   ## determine output file name
   if(missing(outfile))
@@ -101,6 +102,10 @@ bam_preprocess <- function(x,
   }  
   
   check_args(ignore = "outfile")
+  
+  pipename = match.call()[[1]]
+  message("Generating a ", pipename, " flowmat for sample: ", samplename)
+  
   
   ## ------------ dedup; SINGLE FILE
   dedupbam <- paste0(bam_prefix, ".marked.bam")
@@ -163,14 +168,21 @@ get_bam_chrs <- function(x){
 #' @export
 #' 
 #' @importFrom params read_sheet
+#' @importFrom tools file_path_sans_ext
 #'
 get_fasta_chrs <- function(x){
-  dict = gsub("fasta$", "dict", x)
-  if(!file.exists(dict))
-    stop(c("We need a .dict for the reference fasta file to proceed.", 
-         "Follow this link to learn more: http://lmgtfy.com/?q=create+dict+fasta"))
-    seqs = read_sheet(dict, ext = "tsv", skip = 1)
-    gsub("SN:", "", seqs[, 2], fixed = TRUE)
+  #dict = gsub("fasta$", "dict", x)
+  dict = paste0(file_path_sans_ext(x), ".dict")
+  if(!file.exists(dict)){
+    message(c("We need a dictionary (extension: .dict) for the reference fasta file to proceed. ", 
+           "Follow this link to learn more: http://lmgtfy.com/?q=create+dict+fasta"))
+    warning("By default using hg19 chrs.")
+    chrs = c(1:22,"X","Y","MT")
+  }else{
+  seqs = read_sheet(dict, ext = "tsv", skip = 1)
+  chrs = gsub("SN:", "", seqs[, 2], fixed = TRUE)
+  }
+  return(chrs)
 }
 
 .get_bam_chrs <- function(bam, samtools_exe = "samtools") {
@@ -185,8 +197,3 @@ get_fasta_chrs <- function(x){
 }
 
 
-if(FALSE){
-  bam="/scratch/iacs/gcc/levelii/140829_SN208_0523_BC5FKTACXX/TCGA-VD-AA8P-10A-01D-A40E_140829_SN208_0523_BC5FKTACXX_s_8_rg.sorted.bam"
-  ##testing on
-  ## /scratch/iacs/iacs_dep/sseth/flows/AdenoidCysticSanger/PD3176a/merge-preproc-0dd3b13a-aef5-4cdc-bee6-15db06f2dc71/tmp
-}
