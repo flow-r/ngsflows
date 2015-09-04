@@ -1,16 +1,14 @@
 
-
-
-
-
-
 ## Downloading resource bundles.
 
-Refernce libraries are available from Illumina and [Broad Insititute](https://www.broadinstitute.org/gatk/guide/article.php?id=1215).
+Reference libraries are available from Illumina and [Broad Insititute](https://www.broadinstitute.org/gatk/guide/article.php?id=1215).
 
-We have a in built function to get genomes from Illumina (example below), but for Human genetics we recommend to the bundle from Broad Institute.
+We have a in built function to get genomes from Illumina (example below), but for Human genetics its better to use the bundle from Broad Institute.
+
+One may run the following commands to get the bundle from Illumina
 
 ```
+library(ngsflows)
 fetch_genomes(species="Homo_sapiens")
 
 ################################################

@@ -1,3 +1,3 @@
 .onAttach <- function(lib, pkg){
-  packageStartupMessage("Welcome to ngsflows !")
+  packageStartupMessage("ngsflows: genomic (work) flows made faster")
 }
