@@ -9,3 +9,5 @@ usage.Rmd
 .Rhistory
 
 .Rhistory
+
+*.R~
