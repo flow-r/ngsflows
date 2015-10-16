@@ -63,6 +63,15 @@ parse_rd <- function (x, ...){
   out
 }
 
+#' Show a list of all available modules in NGSFlows
+#'
+#' @param pkg 
+#' @param show 
+#'
+#' @export
+#'
+#' @examples
+#' modules()
 modules <- function(pkg = "ngsflows", show = TRUE){
   funcs = ls(paste0('package:', pkg))
   
@@ -71,8 +80,8 @@ modules <- function(pkg = "ngsflows", show = TRUE){
     type = attr(get(f), 'type', exact = TRUE)
     type = ifelse(is.null(type), 'NA', type)
     
-    debug(parse_rd)
-    rd =  parse_rd(rd)
+    #debug(parse_rd)
+    #rd =  parse_rd(rd)
     if(type == "module")
       rd = pkg_topic(pkg, f)
     else
