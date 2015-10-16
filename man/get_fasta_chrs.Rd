@@ -4,10 +4,12 @@
 \alias{get_fasta_chrs}
 \title{Read the associated dictionary file and return a list of chromosome names}
 \usage{
-get_fasta_chrs(x)
+get_fasta_chrs(x = get_opts("ref_fasta"), length = FALSE)
 }
 \arguments{
 \item{x}{a reference genome fasta file}
+
+\item{length}{provide length of each chromosome as well [FALSE]}
 }
 \description{
 Read the associated dictionary file and return a list of chromosome names

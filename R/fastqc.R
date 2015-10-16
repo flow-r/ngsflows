@@ -1,5 +1,19 @@
 
 
+#' Fastqc
+#'
+#' @param fqs 
+#' @param fqpath 
+#' @param odir 
+#' @param fastqc_exe 
+#' @param cpu_fastqc 
+#' @param casava 
+#' @param fastqc_opts 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 fastqc <- function(fqs, 
          fqpath,
          odir,
@@ -29,3 +43,4 @@ fastqc <- function(fqs,
   
   return(list(flowmat = flowmat))
 }
+attr(fastqc, "type", "module" ) 

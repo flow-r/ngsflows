@@ -4,7 +4,7 @@
 \alias{chipseq}
 \title{A complete chipseq pipeline from fastq to MACS and Scripture}
 \usage{
-chipseq(fqs, sample_name = "sample_name", out_path,
+chipseq(fqs, samplename = "sample_name", out_path,
   deffile = system.file("data/chipseq.def", package = "SaturnV"),
   bowtie_exe = "/risapps/rhel6/bowtie/1.1.2/bowtie",
   java_exe = "/risapps/noarch/jdk/jdk1.8.0_45/bin/java",
@@ -18,7 +18,7 @@ chipseq(fqs, sample_name = "sample_name", out_path,
 \arguments{
 \item{fqs}{a character vector of paths to fastqs for a sample}
 
-\item{sample_name}{name of this sample (a character vector, length one.)}
+\item{samplename}{name of this sample (a character vector, length one.)}
 }
 \description{
 A complete chipseq pipeline from fastq to MACS and Scripture

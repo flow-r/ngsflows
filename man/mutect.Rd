@@ -4,16 +4,16 @@
 \alias{mutect}
 \title{Title}
 \usage{
-mutect(x, y, samplename = get_opts("samplename"), outfile, is_merged = TRUE,
-  split_by_chr = TRUE, java_exe = get_opts("java_exe"),
+mutect(tumor_bam, normal_bam, samplename = get_opts("samplename"), outfile,
+  is_merged = TRUE, split_by_chr = TRUE, java_exe = get_opts("java_exe"),
   java_tmp = get_opts("java_tmp"), mutect_jar = get_opts("mutect_jar"),
-  cpu_mutect = 1, mem_mutect = "-Xmx8g",
+  cpu_mutect = get_opts("cpu_mutect"), mem_mutect = get_opts("java_mem"),
   ref_fasta = get_opts("ref_fasta"), mutect_opts = get_opts("mutect_opts"))
 }
 \arguments{
-\item{x}{}
+\item{tumor_bam}{}
 
-\item{y}{}
+\item{normal_bam}{}
 
 \item{samplename}{}
 
@@ -27,11 +27,13 @@ mutect(x, y, samplename = get_opts("samplename"), outfile, is_merged = TRUE,
 Title
 }
 \examples{
+\dontrun{
+
 x = "tumor.bam"
 y = "normal.bam"
 
 out = mutect(x, y, is_merged = TRUE)
 
-x = "tumor.bam"
+}
 }
 

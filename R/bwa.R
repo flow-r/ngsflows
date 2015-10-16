@@ -88,9 +88,8 @@ bwa <- function(method = c("backtrack", "mem", "aln_sam"), ...){
     return(bwa.backtrack(...))
   if(method == "mem")
     return(bwa.mem(...))
-    
-  
 }
+attr(bwa, "type", "module" ) 
 
 
 #' @rdname bwa

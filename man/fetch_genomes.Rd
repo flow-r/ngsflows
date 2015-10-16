@@ -21,7 +21,7 @@ fetch_genomes(genome_path = "~/flowr/genomes", verbose = FALSE, ...)
 fetch_genomes
 }
 \examples{
-\\donotrun{
+\dontrun{
 genomes_fetch(species = Homo_sapiens, src = 'NCBI', build = 'build37.2')
 }
 }
