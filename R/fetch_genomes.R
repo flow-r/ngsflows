@@ -12,7 +12,7 @@
 #' @importFrom curl curl_download
 #' 
 #' 
-#' @examples \donotrun{
+#' @examples \dontrun{
 #' genomes_fetch(species = Homo_sapiens, src = 'NCBI', build = 'build37.2')
 #' }
 fetch_genomes <- function(genome_path = "~/flowr/genomes", verbose = FALSE,

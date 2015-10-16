@@ -1,3 +1,6 @@
+## in-house
+
+
 ## chipseq pipeline
 
 ## By Sahil Seth, Samir Amin
@@ -35,9 +38,9 @@ if(FALSE){
 #' A complete chipseq pipeline from fastq to MACS and Scripture
 #' 
 #' @param fqs a character vector of paths to fastqs for a sample
-#' @param sample_name name of this sample (a character vector, length one.)
+#' @param samplename name of this sample (a character vector, length one.)
 chipseq <-function(fqs,
-                   sample_name = "sample_name",
+                   samplename = "sample_name",
                    out_path,
                    deffile = system.file("data/chipseq.def", package = "SaturnV"),
                    
@@ -55,19 +58,19 @@ chipseq <-function(fqs,
   ## check ALL arguments none of them should be NULL
   check_args()
   
-  cmd_unzip <- sprintf("touch %s.running; gunzip -c %s > %s.fastq", sample_name, paste(fqs, collapse = " "), sample_name) 
+  cmd_unzip <- sprintf("touch %s.running; gunzip -c %s > %s.fastq", samplename, paste(fqs, collapse = " "), samplename) 
   
   cmd_align <- sprintf("%s -n 1 -m 1 -S --best --strata -p 4 --chunkmbs 320 -t %s %s.fastq %s.sam",
-                       bowtie_exe, bowtie_index, sample_name, sample_name)
+                       bowtie_exe, bowtie_index, samplename, samplename)
   
   cmd_bam <- sprintf("module load samtools; samtools view -bS %s.sam > %s.bam",
-                     sample_name, sample_name)
+                     samplename, samplename)
   
   ## primary output file
-  bam = sprintf("%s.sorted.bam", sample_name)
+  bam = sprintf("%s.sorted.bam", samplename)
   
   cmd_sort <- sprintf("%s -m 3072M -T %s.sorted -o %s %s.bam",
-                      samtools_exe, sample_name, bam, sample_name)
+                      samtools_exe, samplename, bam, samplename)
   
   cmd_index <- sprintf("%s index %s",
                        samtools_exe, bam)
@@ -76,13 +79,13 @@ chipseq <-function(fqs,
                           samtools_exe, bam, bam)
   
   cmd_bam2bed <- sprintf("bedtools bamtobed -i %s > %s.sorted.bed",
-                         bam, sample_name)
+                         bam, samplename)
   
   cmd_maketdf <- sprintf("%s -Xmx2g -jar %s count -w 25 -e 164 %s %s.tdf hg19",
-                         java_exe, igvtools_exe, bam, sample_name)
+                         java_exe, igvtools_exe, bam, samplename)
   
   cmd_macs14 <- sprintf("%s -t %s --nomodel -n %s",
-                        macs_exe, bam, sample_name)
+                        macs14_exe, bam, samplename)
   
   
   ## scripture will have 25 commands, one for each chr
@@ -100,17 +103,17 @@ chipseq <-function(fqs,
                   flagstat = cmd_flagstat,
                   bam2bed = cmd_bam2bed,
                   maketdf = cmd_maketdf, 
-                  macs = cmd_macs14,
-                  hg19tab = cmd_hg19table, 
-                  scripture = cmd_scripture, 
-                  scripture_bed = cmd_scripture_bed)
+                  macs = cmd_macs14)
+                  #hg19tab = cmd_hg19table, 
+                  #scripture = cmd_scripture, 
+                  #scripture_bed = cmd_scripture_bed)
   
   ## give a named list and get a data.frame back !
-  flowmat <- to_flowmat(x = cmd_list, samplename = sample_name)
+  flowmat <- to_flowmat(x = cmd_list, samplename = samplename)
   
-  def = as.flowdef(deffile)
+  #def = as.flowdef(deffile)
   ## create a flow object
-  fobj = to_flow(flowmat, def, flowname = "chipseq", flow_run_path = out_path)
+  #fobj = to_flow(flowmat, def, flowname = "chipseq", flow_run_path = out_path)
   
-  invisible(list(flowmat = flowmat, fobj = fobj))
+  invisible(list(flowmat = flowmat))
 }

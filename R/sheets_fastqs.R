@@ -16,7 +16,7 @@ detect_fq_format2 <- function(x){
     format <- "{{samplename}}_{{index}}_L00{{lane}}_R{{read}}_{{num}}.fastq.gz"
   }else{
     stop(c("Looks like we could not understand pattern in names of fastq files",
-      print(head(x))))
+           print(head(x))))
   }
 }
 
@@ -24,6 +24,7 @@ detect_fq_format2 <- function(x){
 #' split_names_fastq2
 #' @importFrom flowr whisker_render
 split_names_fastq2 <- function(x, format = "{{samplename}}_{{index}}_L00{{lane}}_R{{read}}_{{num}}.fastq.gz"){
+
   ## --- regex pattern for each piece
   lst_patterns = list(
     samplename = "(.*)",
@@ -36,17 +37,37 @@ split_names_fastq2 <- function(x, format = "{{samplename}}_{{index}}_L00{{lane}}
   tmp = whisker_render(format, lst_patterns)
   fmt = tmp$out
   vars = tmp$vars
-
-  ## get matrix
+  
+  ## get the parse matrix
   repl <- paste("\\",1:length(vars), sep="",collapse=",")
   mat <- gsub(fmt, repl, basename(x))
-  mat <- data.frame(cbind(do.call(rbind, strsplit(mat,",")), x))
+  
+  ## longer, but more robust
+  mat = lapply(1:length(mat), function(i){
+    out = strsplit(mat[i], ",")[[1]]
+    add_vars = length(vars) - length(out)
+    if(add_vars > 0){
+      out = c(out, rep(NA, add_vars))
+      warning("there was a issue parsing this filename: ", basename(x[i]))
+    }
+    return(out)
+  })
+  warnings()
+  
+  mat <- do.call(rbind, mat)
+  mat <- data.frame(mat, x, stringsAsFactors = FALSE)
+  
+  ## if all files were not parsed properly
+  ## show extra message, to help debug
+  ## This does not catch, when some file are parsed improperly.
   if(ncol(mat) != length(c(vars, "file"))){
     message("Final evaluated regular expression: ", fmt, " ---> ", repl)
     message("Format was not able to split fastq names properly.")
     print(head(mat))
-    stop("Exiting create_fq_sheet..")
+    stop("Exiting create_fq_sheet...")
   }
+  
+  ## if all is well
   colnames(mat) <- c(vars, "file")
   return(mat)
 }
@@ -59,31 +80,31 @@ split_names_fastq2 <- function(x, format = "{{samplename}}_{{index}}_L00{{lane}}
 #' 
 #' @export
 check_fastq_sheet <- function(x, 
-  id_column = "samplename", 
-  file_column = "file", 
-  read_column = "read"){
-    mat = x
-    message("There are ", length(unique(mat[, id_column])), " samples in this dataset")
-    dat_list <- split.data.frame(mat, mat[, id_column])
-    if(length(mat$files) > 0){
-      tmp <- sapply(1:length(dat_list), function(i){
-        tmp <- tapply(dat_list[[i]][, file_column], dat_list[[i]][, read_column], length)
-        ## check in case of paired end
-        if(length(tmp) > 1){
-          if(diff(tmp) != 0) stop("Number of fastq files are not the same in",
-            dat_list[[i]][, id_column][1], "sample")
-        }
-        return(0)
-      })}
-    return(x)
-  }
+                              id_column = "samplename", 
+                              file_column = "file", 
+                              read_column = "read"){
+  mat = x
+  message("There are ", length(unique(mat[, id_column])), " samples in this dataset")
+  dat_list <- split.data.frame(mat, mat[, id_column])
+  if(length(mat$files) > 0){
+    tmp <- sapply(1:length(dat_list), function(i){
+      tmp <- tapply(dat_list[[i]][, file_column], dat_list[[i]][, read_column], length)
+      ## check in case of paired end
+      if(length(tmp) > 1){
+        if(diff(tmp) != 0) stop("Number of fastq files are not the same in",
+                                dat_list[[i]][, id_column][1], "sample")
+      }
+      return(0)
+    })}
+  return(x)
+}
 
 
 
 
 options(
   ngs_fq_ext = "fastq.gz"
-  )
+)
 
 #' create a sheet of fastq
 #' @param x path to a fastq folder
@@ -92,31 +113,33 @@ options(
 #' @param sample_prefix A prefix to add to all sample names, run, project etc.....
 #' @export
 create_fq_sheet <- function(x, 
-  ext = get_opts("ngs_fq_ext"),
-  format = get_opts("ngs_fq_format"),
-  sample_prefix = ""
-  ){
+                            ext = get_opts("fastq_extension"),
+                            format = get_opts("fastq_format"),
+                            sample_prefix = ""){
   
-    if(is.null(ext)) ext = "fastq.gz|fastq"
-    if(!grepl("$", ext, fixed = TRUE))
-      ext = paste0(ext, "$") ## add a dollar
-    
+  ## get the extension to use
+  if(is.null(ext)) ext = "fastq.gz|fastq"
+  if(!grepl("$", ext, fixed = TRUE))
+    ext = paste0(ext, "$") ## add a dollar
+  
+  ## fetch the files to parse
   fqs <- unlist(lapply(x, list.files, pattern = ext, full.names=TRUE,recursive=TRUE))
   if(length(fqs) == 0)
     stop("no fastq files found. Please check the folder provided.")
+  
+  ## get the format to use
   if(missing(format))
     format <- detect_fq_format2(fqs)
   if(is.null(format))
     format <- detect_fq_format2(fqs)
   
   fqmat <- split_names_fastq2(fqs, format)
+  
+  ## if one needs to change the samplename to include anything in this
   fqmat$samplename = paste0(sample_prefix, fqmat$samplename)
   
   return(fqmat)
 }
-
-
-
 
 
 
@@ -143,7 +166,7 @@ if(FALSE){
   
   path=sprintf("/scratch/iacs/gcc/leveli/%s",runid)
   fq_mat <- create_sample_mat(path,project="ANDY",subproject="Futreal-AS", runid=runid,
-    outpath="~/flows/ANDY-Futreal-AS")
+                              outpath="~/flows/ANDY-Futreal-AS")
 }
 
 
@@ -162,7 +185,7 @@ detect_fq_format <- function(x){
     format <- "$samplename$_$index$_L00$lane$_R$read$_$num$.fastq.gz"
   }else{
     stop(c("Looks like we could not understand pattern in names of fastq files",
-      print(head(x))))
+           print(head(x))))
   }
 }
 
@@ -187,49 +210,49 @@ detect_fq_format <- function(x){
 #' create_sample_mat(levelipath)
 #' }
 create_sample_sheet <- function(path, project, subproject, runid, format,
-  fix.names = FALSE,  fix.names.char = "-",
-  out_sep = c("\t", ","),
-  include.undetermined = FALSE,
-  pattern = "fastq.gz|fq.gz|fastq|fq", outfile){
-    
-    message("Fetching path(s) for fastq files...\n")
-    .Deprecated("create_fq_sheet")
-    fqs <- unlist(lapply(path, list.files, pattern = pattern,full.names=TRUE,recursive=TRUE))
-    if(!include.undetermined) fqs <- grep("Undetermined", fqs, value = TRUE, invert = TRUE)
-    if(length(fqs) == 0) stop("No fastq files detected in this folder\n")
-    if(missing(project)) {project = basename(path); cat("\nDetecting project name:", project)}
-    if(missing(subproject)){subproject = substr(project, 1, 2); cat("\nDetecting subproject:", subproject)}
-    if(missing(runid)){runid = basename(dirname(dirname(dirname(fqs[1])))) ; cat("\nDetecting runid:", runid)}## runid
-    out_sep = match.arg(out_sep)
-    if(missing(outfile)){
-      outfile = sprintf("%s_%s_%s_sample_mat.%s", project, subproject, runid,
-        switch(out_sep,
-          "," = "csv",
-          "\t" = "tsv"))
-      cat("\nDetecting outfile:", outfile)
-    }## folder for samplemat
-    if(missing(format)){
-      format <- detect_fq_format(fqs[1])
-    }
-    fq_mat <- split_names_fastq(files = fqs, format = format)
-    if(fix.names){
-      fq_mat$sample_id_orig = fq_mat$sample_id
-      fq_mat$sample_id = fix_names(fq_mat$sample_id, char = fix.names.char)
-      if(fix.names.char == ".") ## . opt style 2, good for data.frames
-        fq_mat$sample_id = make.names(fq_mat$sample_id)
-      ## ------- cleanup things: use _ to seperate out other things
-    }
-    cat("\nThere are", length(unique(fq_mat$samplename)), "samples in this folder")
-    out_basename <- sprintf("%s-%s-%s_%s", project, subproject, fq_mat$samplename, runid)
-    ## sorted_bam <- sprintf("%s_rg.sorted.bam",out_basename)
-    ## recal_bam <- sprintf("%s_rg.sorted.recalibed.bam", out_basename)
-    fq_mat <- cbind(fq_mat, out_basename, runid, project, subproject)
-    fq_mat = fq_mat[!grepl("Undetermined", fq_mat$samplename), ] ## remove undermined
-    outpath = dirname(outfile)
-    if(!file.exists(outpath) & outpath!='.') dir.create(outpath) ## is X exists and not 'blank'
-    write.table(fq_mat, file = outfile, row.names=FALSE, sep = out_sep, quote = FALSE)
-    return(fq_mat = fq_mat)
+                                fix.names = FALSE,  fix.names.char = "-",
+                                out_sep = c("\t", ","),
+                                include.undetermined = FALSE,
+                                pattern = "fastq.gz|fq.gz|fastq|fq", outfile){
+  
+  message("Fetching path(s) for fastq files...\n")
+  .Deprecated("create_fq_sheet")
+  fqs <- unlist(lapply(path, list.files, pattern = pattern,full.names=TRUE,recursive=TRUE))
+  if(!include.undetermined) fqs <- grep("Undetermined", fqs, value = TRUE, invert = TRUE)
+  if(length(fqs) == 0) stop("No fastq files detected in this folder\n")
+  if(missing(project)) {project = basename(path); cat("\nDetecting project name:", project)}
+  if(missing(subproject)){subproject = substr(project, 1, 2); cat("\nDetecting subproject:", subproject)}
+  if(missing(runid)){runid = basename(dirname(dirname(dirname(fqs[1])))) ; cat("\nDetecting runid:", runid)}## runid
+  out_sep = match.arg(out_sep)
+  if(missing(outfile)){
+    outfile = sprintf("%s_%s_%s_sample_mat.%s", project, subproject, runid,
+                      switch(out_sep,
+                             "," = "csv",
+                             "\t" = "tsv"))
+    cat("\nDetecting outfile:", outfile)
+  }## folder for samplemat
+  if(missing(format)){
+    format <- detect_fq_format(fqs[1])
   }
+  fq_mat <- split_names_fastq(files = fqs, format = format)
+  if(fix.names){
+    fq_mat$sample_id_orig = fq_mat$sample_id
+    fq_mat$sample_id = fix_names(fq_mat$sample_id, char = fix.names.char)
+    if(fix.names.char == ".") ## . opt style 2, good for data.frames
+      fq_mat$sample_id = make.names(fq_mat$sample_id)
+    ## ------- cleanup things: use _ to seperate out other things
+  }
+  cat("\nThere are", length(unique(fq_mat$samplename)), "samples in this folder")
+  out_basename <- sprintf("%s-%s-%s_%s", project, subproject, fq_mat$samplename, runid)
+  ## sorted_bam <- sprintf("%s_rg.sorted.bam",out_basename)
+  ## recal_bam <- sprintf("%s_rg.sorted.recalibed.bam", out_basename)
+  fq_mat <- cbind(fq_mat, out_basename, runid, project, subproject)
+  fq_mat = fq_mat[!grepl("Undetermined", fq_mat$samplename), ] ## remove undermined
+  outpath = dirname(outfile)
+  if(!file.exists(outpath) & outpath!='.') dir.create(outpath) ## is X exists and not 'blank'
+  write.table(fq_mat, file = outfile, row.names=FALSE, sep = out_sep, quote = FALSE)
+  return(fq_mat = fq_mat)
+}
 
 
 #' @title split.names.fastq

@@ -34,7 +34,7 @@ chk_fq <- function(fqs1, fqs2){
   if(paired_end)
     if(length(fqs1) != length(fqs2))
       stop("Length of fqs1 and fqs2 dont match ! Exiting...\nfqs1\n:", 
-        fqs1, "\n\nfqs2\n:", fqs2)
+           fqs1, "\n\nfqs2\n:", fqs2)
   
   cat_cmd = ifelse(ext == "gz", "zcat", "cat")
   
@@ -55,22 +55,53 @@ set_opts(
 
 #' Wrapper for BWA sequence alignment tool
 #' 
+#' @description 
+#' Quoting from BWA's website:
+#' 
+#' BWA is a software package for mapping low-divergent sequences against a large reference genome, 
+#' such as the human genome. It consists of three algorithms: BWA-backtrack, BWA-SW and BWA-MEM.
+#' The first algorithm is designed for Illumina sequence reads up to 100bp, while the rest two for 
+#' longer sequences ranged from 70bp to 1Mbp. BWA-MEM and BWA-SW share similar features such as 
+#' long-read support and split alignment, but BWA-MEM, which is the latest, is generally recommended
+#' for high-quality queries as it is faster and more accurate. BWA-MEM also has better performance
+#' than BWA-backtrack for 70-100bp Illumina reads.
+#' For all the algorithms, BWA first needs to construct the FM-index for the reference genome 
+#' (the index command). Alignment algorithms are invoked with different sub-commands: 
+#' aln/samse/sampe for BWA-backtrack, bwasw for BWA-SW and mem for the BWA-MEM algorithm.
+#' 
 #' @param fastq1 character vector with full paths to fastq files for mate 1.
 #' @param fastq2 character vector
+#' @param bwa_mem_opts
 #' 
 #' @return 
 #' A list, with cmds as one of the variables which
 #' contains system commands to be run.
 #' 
+#' @source http://bio-bwa.sourceforge.net/bwa.shtml
 #' @export
-#' @importFrom flowr check_args
-#' @details 
-#' Default params picked up from ngsflow.conf
-bwa <- function(
+#'
+bwa <- function(method = c("backtrack", "mem", "aln_sam"), ...){
+  
+  method = match.arg(method)
+  
+  if(method %in% c("backtrack", "aln_sam"))
+    return(bwa.backtrack(...))
+  if(method == "mem")
+    return(bwa.mem(...))
+    
+  
+}
+
+
+#' @rdname bwa
+#' @export
+#' @importFrom flowr check_args get_opts to_flowmat
+bwa.backtrack <- function(
+  
   fqs1, 
   fqs2,
-  samplename = get_opts("samplename"),
   paired_end, ## auto detect it fastq2, is available
+  samplename = get_opts("samplename"),
   
   bwa_exe = get_opts("bwa_exe"), 
   ref_bwa = get_opts("ref_bwa"),
@@ -78,9 +109,7 @@ bwa <- function(
   cpu_bwa_aln = get_opts("cpu_bwa_aln"),
   bwa_sampe_opts = get_opts("bwa_sampe_opts"),
   bwa_samse_opts = get_opts("bwa_samse_opts"),
-  samtools_exe = get_opts("samtools_exe")
-  
-  ){
+  samtools_exe = get_opts("samtools_exe")){
   
   
   ## --- some generic steps which may be done in case of 
@@ -94,7 +123,7 @@ bwa <- function(
   #source('~/Dropbox/public/github_flow/R/checkmat_assert.R')
   ## no arguments should be NULL
   check_args()
-
+  
   ##  ------- Set up all the files which would be used.
   sai_files1 = file.path(gsub(chkfq$ext, "sai", basename(fqs1)))
   if(paired_end)
@@ -103,25 +132,25 @@ bwa <- function(
   ## These would be out files !. ALWAYS USE basename
   bam_files = file.path(gsub(chkfq$ext, "bam", basename(fqs1)))
   bam_prefix = gsub(".bam", "", bam_files)
-
+  
   ## --- BWA aln and sampe
   #bwa_method <- match.arg(bwa_method)
-
+  
   if(!paired_end){
     cmd_aln1 = sprintf("%s aln -t %s %s %s > %s", 
                        bwa_exe, cpu_bwa_aln, bwa_aln_opts, ref_bwa, fqs1, sai_files1)
     cmd_samse = sprintf("%s sampe %s %s %s %s| %s view -Shu - > %s",
-      bwa_exe, bwa_samse_opts, ref_bwa, sai_files1, fqs1, samtools_exe, bam_prefix)
+                        bwa_exe, bwa_samse_opts, ref_bwa, sai_files1, fqs1, samtools_exe, bam_prefix)
     cmds = list(aln1 = cmd_aln1, cmd_samse = cmd_samse)
   }
   
   if(paired_end){
     cmd_aln1 = sprintf("%s aln -t %s %s %s %s > %s", 
-      bwa_exe, cpu_bwa_aln, bwa_aln_opts, ref_bwa, fqs1, sai_files1)
+                       bwa_exe, cpu_bwa_aln, bwa_aln_opts, ref_bwa, fqs1, sai_files1)
     cmd_aln2 = sprintf("%s aln -t %s %s %s %s > %s",
-      bwa_exe, cpu_bwa_aln, bwa_aln_opts, ref_bwa, fqs2, sai_files2)
+                       bwa_exe, cpu_bwa_aln, bwa_aln_opts, ref_bwa, fqs2, sai_files2)
     cmd_sampe = sprintf("%s sampe %s %s %s %s %s %s | %s view -Shu - | %s sort - %s",
-      bwa_exe, bwa_sampe_opts, ref_bwa, sai_files1, sai_files2, fqs1, fqs2, samtools_exe, samtools_exe, bam_prefix)
+                        bwa_exe, bwa_sampe_opts, ref_bwa, sai_files1, sai_files2, fqs1, fqs2, samtools_exe, samtools_exe, bam_prefix)
     ## --- make a named list of commands
     cmds = list(aln1 = cmd_aln1, aln2 = cmd_aln2, sampe = cmd_sampe)
   }
@@ -130,27 +159,76 @@ bwa <- function(
   ## --- convert to flow_mat compatible DF.
   ## --- INPUT is a NAMED list
   flowmat = to_flowmat(cmds, samplename)
-  ret = list(outfiles = bam_files, flowmat = flowmat)
-  return(ret)
+  return(list(outfiles = bam_files, flowmat = flowmat))
 }
 
+get_rg <- function(samplename, 
+                   seq_platform = "illumina", 
+                   center = "MDA",
+                   lane = 1){
+  rgid = rglb = rgsm = samplename
+  rgpu = lane;cn="MDA"
+  #"@RG     ID:TCGA-A6-6141-01A     LB:TCGA-A6-6141-01A     PL:illumina     SM:TCGA-A6-6141-01A     PU:lane1        CN:MDA"
+  rg = sprintf("'@RG\tID:%s\tLB:%s\tSM:%s\tPL:%s\tPU:%s\tCN:%s'", 
+               rgid, rglb, rgsm, rgpu, cn)
+  return(rg)
+  
+}
 
-bwa_mem <- function(){
+#' @rdname bwa
+#' @importFrom flowr to_flowmat
+#' @export
+bwa.mem <- function(fqs1, 
+                    fqs2,
+                    paired_end = get_opts("paired_end"), ## auto detect it fastq2, is available
+                    samplename = get_opts("samplename"),
+                    
+                    bwa_exe = get_opts("bwa_exe"), 
+                    ref_bwa = get_opts("ref_bwa"),
+                    bwa_mem_opts = get_opts("bwa_mem_opts"),
+                    cpu_bwa_mem = get_opts("cpu_bwa_mem"),
+                    samtools_exe = get_opts("samtools_exe"),
+                    execute = FALSE){
   ## ---- NOT implemented !
   
-  if(bwa_method == "mem" & paired_end){
-    cmds <- sprintf("%s mem %s %s %s %s",
-      bwa_exe, bwa_mem_opt, bwa_index, fastq1, fastq2)
-  }else if(bwa_method == "mem" & !paired_end){
-    cmds <- sprintf("%s mem %s %s",
-      bwa_exe, bwa_mem_opt, bwa_index, fastq1)
+  ## check all arguments
+  check_args(ignore = "fqs2")
+  
+  chkfq <- chk_fq(fqs1 = fqs1, fqs2 = fqs2)
+  
+  ## as.logical was neccesary
+  if(paired_end){
+    if(missing(fqs2))
+      bwa_mem_opts = paste0(" -p ", bwa_mem_opts)
   }
   
+  ## These would be out files !. ALWAYS USE basename
+  bam_files = file.path(gsub(chkfq$ext, "bam", basename(fqs1)))
+  bam_prefix = gsub(".bam", "", bam_files)
   
+  rgtag = get_rg(samplename)
+  bwa_mem_opts = paste0(bwa_mem_opts, "-r ", rgtag)
+  
+  
+  if(!missing(fqs2)){
+    cmd_mem <- sprintf("%s mem %s -t %s %s %s %s | %s sort - %s",
+                    bwa_exe, bwa_mem_opts, cpu_bwa_mem, ref_bwa, fqs1, fqs2, samtools_exe, bam_prefix)
+  }else{
+    cmd_mem <- sprintf("%s mem %s -t %s %s %s | %s sort - %s",
+                    bwa_exe, bwa_mem_opts, cpu_bwa_mem, ref_bwa, fqs1, samtools_exe, bam_prefix)
+  }
+  
+  if(execute){
+    print(unlist(cmds))
+    system(unlist(cmds))
+  }
+  
+  cmds = list(mem = cmd_mem)
   ## --- convert to flow_mat compatible DF.
   ## --- INPUT is a NAMED list
   flowmat = to_flowmat(cmds, samplename)
   ret = list(outfiles = bam_files, flowmat = flowmat)
+  
   return(ret)
   
 }
@@ -174,7 +252,7 @@ if(FALSE){
   ## PE
   #debug(bwa)
   out = bwa(fqs1 = rep("read1.fq", 20),
-    fqs2 = rep("read2.fq", 20))
+            fqs2 = rep("read2.fq", 20))
   
   
   ## SE

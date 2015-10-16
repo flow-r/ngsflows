@@ -15,7 +15,7 @@ if(FALSE){
   fobj2 = submit_flow(fobj, execute = TRUE)
   
   
-  plot_flow(def)
+  plot_flow(def, pdffile = "inst/pipelines/bam_preprocess.pdf")
   ##testing on
   ## /scratch/iacs/iacs_dep/sseth/flows/AdenoidCysticSanger/PD3176a/merge-preproc-0dd3b13a-aef5-4cdc-bee6-15db06f2dc71/tmp
 }

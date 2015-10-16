@@ -1,8 +1,8 @@
 
 #' Title
 #'
-#' @param x 
-#' @param y 
+#' @param tumor_bam 
+#' @param normal_bam 
 #' @param samplename 
 #' @param outfile 
 #' @param is_merged 
@@ -10,14 +10,15 @@
 #'
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{
+#' 
 #' x = "tumor.bam"
 #' y = "normal.bam"
 #' 
 #' out = mutect(x, y, is_merged = TRUE)
 #' 
-#' x = "tumor.bam"
-mutect <- function(x, y,
+#' }
+mutect <- function(tumor_bam, normal_bam,
                    samplename = get_opts("samplename"),
                    outfile,
                    is_merged = TRUE,
@@ -25,56 +26,102 @@ mutect <- function(x, y,
                    
                    java_exe = get_opts("java_exe"),
                    java_tmp = get_opts("java_tmp"),
-
+                   
                    mutect_jar = get_opts('mutect_jar'),
                    
-                   cpu_mutect = 1,
-                   mem_mutect = "-Xmx8g",
+                   cpu_mutect = get_opts('cpu_mutect'), ## curently not suported
+                   mem_mutect = get_opts("java_mem"),
                    
                    ref_fasta = get_opts('ref_fasta'),
                    
                    mutect_opts = get_opts('mutect_opts')
-
-                   ){
-
-    ## determine output file name
-    if(missing(outfile))
-        bam_prefix <- gsub(".bam", "", basename(x))
-    else
-        bam_prefix <- gsub(".bam", "", basename(outfile))
-
-    ## if file is available determine whether to split for faster processing
-    if(split_by_chr & is_merged){
-        ##chrs_info <- get_bam_chrs(x)
-        chrs_info <- get_fasta_chrs(ref_fasta)
-        chrs_prefix <- paste(bam_prefix, chrs_info, sep = "_") ## bam names
-        intervals_opts = paste0(" -L ", chrs_info)             ## interval files
-
-    }else if(split_by_chr & !is_merged){
-        chrs_prefix = bam_prefix
-        intervals_opts = ""
-
-    }else{
-        chrs_prefix = bam_prefix
-        intervals_opts = ""
+                   
+){
+  
+  ## determine output file name
+  if(missing(outfile))
+    bam_prefix <- gsub(".bam", "", basename(normal_bam))
+  else
+    bam_prefix <- outfile
+  
+  ## if file is available determine whether to split for faster processing
+  ## even if the bam files are pre-split its better to explicitily supply the 
+  ## chr info
+  if(split_by_chr){
+    
+    ##chrs_info <- get_bam_chrs(tumor_bam)
+    chrs_info <- get_fasta_chrs(ref_fasta)
+    chrs_prefix <- paste0(bam_prefix, "_", chrs_info) ## bam names
+    intervals_opts = paste0(" -L ", chrs_info)             ## interval files
+    
+    if(is_merged & length(tumor_bam) > 1){
+      stop("multiple bams supplied, expected 1; perhaps is_merged should be FALSE?")
+      
+    }else if(!is_merged & length(tumor_bam) == 1){
+      stop("single bam supplied, expected multiple (one fo each chromosome); perhaps is_merged should be TRUE")
     }
+  }else{
+  ## dont split
+    chrs_prefix = paste0(bam_prefix, ".")
+    intervals_opts = ""
+  }
+  
+  check_args(ignore = "outfile")
+  
+  pipename = match.call()[[1]]
+  message("Generating a ", pipename, " flowmat for sample: ", samplename)
+  
+  mutects <- paste0(chrs_prefix, ".mutect.txt")
+  wigs <- paste0(chrs_prefix, ".wig")
+  
+  if(!(length(intervals_opts) == length(wigs) | length(intervals_opts) == 1))
+    stop("length of intervals should be same as wigs OR 1")
+  
+  cmd_mutect <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s --analysis_type MuTect --reference_sequence %s --input_file:tumor %s --input_file:normal %s --out %s  --coverage_file %s %s %s",
+                        java_exe, mem_mutect, java_tmp, mutect_jar, ref_fasta, tumor_bam, normal_bam,
+                        mutects, wigs, 
+                        mutect_opts, intervals_opts)
+  cmds <- list(mutect = cmd_mutect)
+  
+  ## .filter='judgement==KEEP'
+  if(split_by_chr){
+    merged_mutect = paste0(bam_prefix, "_merged.mutect.tsv")
+    cmd_merge = sprintf("flowr ngsflows::merge_sheets x=%s outfile=%s", 
+                        paste(mutects, collapse = ","), merged_mutect)
+    cmds = c(cmds, mutect_merge = cmd_merge)
+  }
 
-    check_args(ignore = "outfile")
-
-    pipename = match.call()[[1]]
-    message("Generating a ", pipename, " flowmat for sample: ", samplename)
-
-    mutects <- paste0(chrs_prefix, ".mutect.txt")
-    wigs <- paste0(chrs_prefix, ".wig.txt")
-
-    cmds_mutect <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s --analysis_type MuTect --reference_sequence %s --input_file:tumor --input_file:normal --out %s  --coverage_file %s %s %s",
-                           java_exe, mem_mutect, java_tmp, mutect_jar, ref_fasta, x, y,
-                           mutects,
-                           mutect_opts, inverval_opts)
-
-    cmds <- list(mutect = cmd_mutect)
-
-    flowmat = to_flowmat(cmds, samplename = samplename)
-    return(list(flowmat=flowmat, outfile=recalibbams))
-
+  flowmat = to_flowmat(cmds, samplename = samplename)
+  return(list(flowmat=flowmat, outfiles=list(all = mutects, merged = merged_mutect)))
+  
 }
+
+
+#' Title
+#'
+#' @param fl
+#' @param outfile
+#'
+#' @export
+merge_sheets <- function(x, outfile, .filter = NA, ...){
+  tmp <- lapply(x, function(fl){
+    message(".", appendLF = FALSE)
+    tab = read_sheet(fl, ...)
+    if(!is.na(.filter)){
+      tab2 = dplyr::filter_(tab, .filter)
+      return(tab2)
+    }else{
+      return(tab)
+    }
+  })
+  
+  mrgd = do.call(rbind, tmp)
+  if(!missing(outfile))
+    write_sheet(mrgd, outfile)
+  
+  invisible(mrgd)
+}
+
+
+
+

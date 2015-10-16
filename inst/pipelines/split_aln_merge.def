@@ -1,8 +1,0 @@
-jobname	sub_type	prev_jobs	dep_type	queue	memory_reserved	walltime	cpu_reserved
-split_fq1	serial	none	none	torque	163185	23:00	163185
-split_fq2	serial	none	none	torque	163185	23:00	163185
-aln1	scatter	split_fq1	serial	torque	163185	23:00	163185
-aln2	scatter	split_fq2	serial	torque	163185	23:00	163185
-sampe	scatter	aln1,aln2	serial	torque	163185	23:00	163185
-fixrg	scatter	sampe	serial	torque	163185	23:00	163185
-merge	serial	fixrg	gather	torque	163185	23:00	163185

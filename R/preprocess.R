@@ -49,40 +49,42 @@
 #' @param printreads_opt
 #' @export
 #' 
-#' @examples \donotrun{
+#' @examples \dontrun{
 #' ## load options, including paths to tools and other parameters
 #' load_opts(fetch_conf("ngsflows.conf"), check = FALSE)
 #' out = bam_preprocess("my_wex.bam", samplename = "samp", split_by_chr = TRUE)
 #' 
 #' }
-bam_preprocess <- function(x, 
-                           samplename = get_opts("samplename"),
-                           outfile, 
-                           split_by_chr = FALSE,
-                           
-                           java_exe = get_opts("java_exe"),
-                           java_tmp = get_opts("java_tmp"),
-                           
-                           gatk_jar = get_opts('gatk_jar'),
-                           picard_dir = get_opts('picard_dir'),
-                           
-                           cpu_markdup = 1,
-                           mem_markdup= "-Xmx8g",
-                           cpu_target = get_opts("cpu_target"),  ## not used
-                           mem_target= "-Xmx32g",
-                           cpu_realign = get_opts("cpu_realign"),
-                           mem_realign= "-Xmx4g", ## scatter 8 per node
-                           cpu_baserecalib = get_opts("cpu_baserecalib"),  
-                           mem_baserecalib= "-Xmx4g", ## scatter 8 per node nct=8
-                           cpu_printreads = get_opts("cpu_printreads"),
-                           mem_printreads= "-Xmx4g", ## scatter 8 per node nct=8
-
-                           ref_fasta = get_opts('ref_fasta'),
-                           
-                           gatk_target_opts = get_opts('gatk_target_opts'),
-                           gatk_realign_opts = get_opts('gatk_realign_opts'),
-                           gatk_baserecalib_opts = get_opts('gatk_baserecalib_opts'),
-                           gatk_printreads_opts = get_opts('gatk_printreads_opts')){
+#' 
+preprocess <- function(x, 
+                       outfile, 
+                       samplename = get_opts("samplename"),
+                       split_by_chr = FALSE,
+                       
+                       java_exe = get_opts("java_exe"),
+                       java_tmp = get_opts("java_tmp"),
+                       
+                       gatk_jar = get_opts('gatk_jar'),
+                       picard_dir = get_opts('picard_dir'),
+                       samtools_exe = get_opts('samtools_exe'),
+                       
+                       cpu_markdup = 1,
+                       mem_markdup= "-Xmx8g",
+                       cpu_target = get_opts("cpu_target"),  ## not used
+                       mem_target= "-Xmx32g",
+                       cpu_realign = get_opts("cpu_realign"),
+                       mem_realign= "-Xmx4g", ## scatter 8 per node
+                       cpu_baserecalib = get_opts("cpu_baserecalib"),  
+                       mem_baserecalib= "-Xmx4g", ## scatter 8 per node nct=8
+                       cpu_printreads = get_opts("cpu_printreads"),
+                       mem_printreads= "-Xmx4g", ## scatter 8 per node nct=8
+                       
+                       ref_fasta = get_opts('ref_fasta'),
+                       
+                       gatk_target_opts = get_opts('gatk_target_opts'),
+                       gatk_realign_opts = get_opts('gatk_realign_opts'),
+                       gatk_baserecalib_opts = get_opts('gatk_baserecalib_opts'),
+                       gatk_printreads_opts = get_opts('gatk_printreads_opts')){
   
   ## determine output file name
   if(missing(outfile))
@@ -127,30 +129,33 @@ bam_preprocess <- function(x,
                          intervalsfiles, realignedbams, gatk_realign_opts, intervals_opts)
   
   ## ------------ base recalibration
+  ## explicity define intervals here as well, though not required.
   recalibbams <- paste0(chrs_prefix, ".recalibed.bam")
   recalibtabfile <- paste0(chrs_prefix, ".recalib.tab")
-  cmd_baserecalib <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s -T BaseRecalibrator -R %s -I %s -o %s -nct %s %s",
+  cmd_baserecalib <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s -T BaseRecalibrator -R %s -I %s -o %s -nct %s %s %s",
                              java_exe, mem_baserecalib, java_tmp, gatk_jar, ref_fasta, 
                              realignedbams, recalibtabfile, cpu_baserecalib,
-                             gatk_baserecalib_opts)
-  cmd_printreads <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s -T PrintReads -R %s -I %s -BQSR %s -o %s -nct %s %s",
+                             gatk_baserecalib_opts, intervals_opts)
+  cmd_printreads1 <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s -T PrintReads -R %s -I %s -BQSR %s -o %s -nct %s %s %s",
                             java_exe, mem_printreads, java_tmp, gatk_jar, ref_fasta, realignedbams, 
                             recalibtabfile, recalibbams, cpu_printreads,
-                            gatk_printreads_opts)
+                            gatk_printreads_opts, intervals_opts)
+  cmd_printreads2 <- sprintf("%s index %s", samtools_exe, recalibbams)
+  cmd_printreads = sprintf("%s;%s", cmd_printreads1, cmd_printreads2)
   
   cmds <- list(markdup = cmd_markdup, 
                target = cmd_target, realign = cmd_realign,
                baserecalib = cmd_baserecalib, printreads = cmd_printreads)
   
   flowmat = to_flowmat(cmds, samplename = samplename)
-  return(list(flowmat=flowmat, outfile=recalibbams))
+  return(list(flowmat=flowmat, outfile = recalibbams))
   
 }
 
 #' @export
 get_bam_chrs <- function(x){
   if(file.exists(x)){
-    out = Rsamtools:::scanBamHeader(x)
+    out = Rsamtools::scanBamHeader(x)
     chrs = names(out[[1]]$targets)
   }else{
     message("bam does not exists, returning hg19 chrs")
@@ -163,23 +168,29 @@ get_bam_chrs <- function(x){
 #' Read the associated dictionary file and return a list of chromosome names
 #'
 #' @param x a reference genome fasta file
+#' @param length provide length of each chromosome as well [FALSE]
 #'
 #' @export
 #' 
 #' @importFrom params read_sheet
 #' @importFrom tools file_path_sans_ext
 #'
-get_fasta_chrs <- function(x){
+get_fasta_chrs <- function(x = get_opts("ref_fasta"),
+                           length = FALSE){
+  check_args()
   #dict = gsub("fasta$", "dict", x)
   dict = paste0(file_path_sans_ext(x), ".dict")
   if(!file.exists(dict)){
     message(c("We need a dictionary (extension: .dict) for the reference fasta file to proceed. ", 
-           "Follow this link to learn more: http://lmgtfy.com/?q=create+dict+fasta"))
+              "Follow this link to learn more: http://lmgtfy.com/?q=create+dict+fasta"))
     warning("By default using hg19 chrs.")
     chrs = c(1:22,"X","Y","MT")
   }else{
-  seqs = read_sheet(dict, ext = "tsv", skip = 1)
-  chrs = gsub("SN:", "", seqs[, 2], fixed = TRUE)
+    seqs = read_sheet(dict, ext = "tsv", skip = 1, head = FALSE)
+    chrs = gsub("SN:", "", seqs[, 2], fixed = TRUE)
+    lens = gsub("LN:", "", seqs[, 3], fixed = TRUE)
+    if(length)
+      return(list(chrs = chrs, lens = lens))
   }
   return(chrs)
 }
