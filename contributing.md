@@ -47,11 +47,11 @@ picard_merge <- function(x,
 
 4. should use `check_args()` to make sure none of the default parameters are null. 
 
-```{r}
-## check_args(), checks ALL the arguments of the function, 
-## and throws a error. use ?check_args for more details.
-get_opts("my_new_tool")
-```
+ ```{r}
+ ## check_args(), checks ALL the arguments of the function, 
+ ## and throws a error. use ?check_args for more details.
+ get_opts("my_new_tool")
+ ```
 
 
 <!-- Here are a few things to note regarding naming a function and what it should do:
