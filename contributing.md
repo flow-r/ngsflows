@@ -1,5 +1,4 @@
-Contributing
-------------------------------------
+# Contributing
 
 Each file in the R folder represents a tool. In it we have a R function prefereably of the same name, or a similar easy name.
 
