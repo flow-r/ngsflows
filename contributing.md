@@ -1,10 +1,6 @@
 Contributing
 ------------------------------------
 
-
-
-# Best practices for writing modules/pipelines
-
 Each file in the R folder represents a tool. In it we have a R function prefereably of the same name, or a similar easy name.
 
 These are some of the practices we follow in-house. We feel using these makes stitching custom pipelines using a set of modules quite easy. Consider this a check-list of a few ideas and a work in progress.
