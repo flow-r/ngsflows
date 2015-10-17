@@ -6,37 +6,22 @@ These are some of the practices we follow in-house. We feel using these makes st
 
 ## A note on module functions
 
-```{r picard_merge, echo=TRUE, comment=""}
-picard_merge <- function(x, 
-                        samplename = get_opts("samplename"),
-                         mergedbam,
-                         java_exe = get_opts("java_exe"),
-                         java_mem = get_opts("java_mem"),
-                         java_tmp = get_opts("java_tmp"),
-                         picard_jar = get_opts("picard_jar")){
-	## Make sure all args have a value (not null)
-	## If a variable was not defined in a conf. file get_opts, will return NULL
-	check_args()  
-  
-  bam_list = paste("INPUT=", x, sep = "", collapse = " ")
-  ## create a named list of commands
-  cmds = list(merge = sprintf("%s %s -Djava.io.tmpdir=%s -jar %s MergeSamFiles %s OUTPUT=%s ASSUME_SORTED=TRUE VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true USE_THREADING=true",
-  java_exe, java_mem, java_tmp, picard_jar, bam_list, mergedbam))
-  
-  ## Create a flowmat
-  flowmat = to_flowmat(cmds, samplename)
-  
-  ## return a list, flowmat AND outfiles
-  return(list(outfiles = mergedbam, flowmat = flowmat))
-}
-```
 
 1. should accept minimum of **two inputs**, 
-    - **x** (a input file etc, depends on the module) and
+    - a input file etc, depends on the module. Flexible
     - samplename (is used to append a column to the flowmat)
+  ```
+  x
+  samplename = get_opts("samplename")
+  ```
+
 2. should always return a list arguments:
     - **flowmat** (required)   : contains all the commands to run
     - **outfiles** (recommended): could be used as an input to other tools
+  ```
+  return(list(outfiles = mergedbam, flowmat = flowmat))
+  ```
+
 3. can define all other default arguments such as paths to tools etc. in a seperate conf (tab-delimited) file.
   - Then use `get_opts("param")` to use their value.
 
@@ -53,6 +38,34 @@ picard_merge <- function(x,
  ## and throws a error. use ?check_args for more details.
  get_opts("my_new_tool")
  ```
+
+## Example
+
+```{r picard_merge, echo=TRUE, comment=""}
+picard_merge <- function(x,
+        samplename = get_opts("samplename"),
+        mergedbam,
+        java_exe = get_opts("java_exe"),
+        java_mem = get_opts("java_mem"),
+        java_tmp = get_opts("java_tmp"),
+        picard_jar = get_opts("picard_jar")){
+	
+  ## Make sure all args have a value (not null)
+  ## If a variable was not defined in a conf. file get_opts, will return NULL
+  check_args()  
+  
+  bam_list = paste("INPUT=", x, sep = "", collapse = " ")
+  ## create a named list of commands
+  cmds = list(merge = sprintf("%s %s -Djava.io.tmpdir=%s -jar %s MergeSamFiles %s OUTPUT=%s ASSUME_SORTED=TRUE VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true USE_THREADING=true",
+  java_exe, java_mem, java_tmp, picard_jar, bam_list, mergedbam))
+  
+  ## Create a flowmat
+  flowmat = to_flowmat(cmds, samplename)
+  
+  ## return a list, flowmat AND outfiles
+  return(list(outfiles = mergedbam, flowmat = flowmat))
+}
+```
 
 
 <!-- Here are a few things to note regarding naming a function and what it should do:
