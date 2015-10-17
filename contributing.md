@@ -38,17 +38,16 @@ picard_merge <- function(x,
     - **outfiles** (recommended): could be used as an input to other tools
 3. can define all other default arguments such as paths to tools etc. in a seperate conf (tab-delimited) file.
   - Then use `get_opts("param")` to use their value.
-
 ```
 ## Example conf file:
 cat my.conf
 bwa_exe	/apps/bwa/bin/bwa
 ```
-
 4. should use `check_args()` to make sure none of the default parameters are null. 
 
 ```{r}
-## check_args(), checks ALL the arguments of the function, and throws a error. use ?check_args for more details.
+## check_args(), checks ALL the arguments of the function, 
+## and throws a error. use ?check_args for more details.
 get_opts("my_new_tool")
 ```
 
