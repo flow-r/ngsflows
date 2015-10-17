@@ -20,7 +20,8 @@ picard_merge <- function(x,
   
   bam_list = paste("INPUT=", x, sep = "", collapse = " ")
   ## create a named list of commands
-  cmds = list(merge = sprintf("%s %s -Djava.io.tmpdir=%s -jar %s MergeSamFiles %s OUTPUT=%s ASSUME_SORTED=TRUE VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true USE_THREADING=true",java_exe, java_mem, java_tmp, picard_jar, bam_list, mergedbam))
+  cmds = list(merge = sprintf("%s %s -Djava.io.tmpdir=%s -jar %s MergeSamFiles %s OUTPUT=%s ASSUME_SORTED=TRUE VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true USE_THREADING=true",
+  java_exe, java_mem, java_tmp, picard_jar, bam_list, mergedbam))
   
   ## Create a flowmat
   flowmat = to_flowmat(cmds, samplename)
