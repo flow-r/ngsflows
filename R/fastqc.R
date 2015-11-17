@@ -10,10 +10,8 @@
 #' @param casava 
 #' @param fastqc_opts 
 #'
-#' @return
 #' @export
 #'
-#' @examples
 fastqc <- function(fqs, 
          fqpath,
          odir,
