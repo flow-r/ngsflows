@@ -2,11 +2,11 @@
 % Please edit documentation in R/annotate.R
 \name{annotate}
 \alias{annotate}
-\title{Title}
+\title{Annotate variants using Annovar}
 \usage{
 annotate(x, samplename = get_opts("samplename"), outfile, build = "hg19",
   annovar_dir = get_opts("annovar_dir"),
-  annotate_func = "IACSUtil:::annotate_mutect")
+  annotate_func = "ngsflows::annotate_mutect")
 }
 \arguments{
 \item{x}{mutect files}
@@ -16,6 +16,6 @@ annotate(x, samplename = get_opts("samplename"), outfile, build = "hg19",
 \item{outfile}{this is the final merged file}
 }
 \description{
-Title
+Annotate variants using Annovar
 }
 

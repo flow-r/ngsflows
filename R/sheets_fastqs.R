@@ -8,11 +8,11 @@
 detect_fq_format2 <- function(x){
   if(grepl("_S1.*fastq.gz", x[1])){ ## miseq output
     ## ------ casava output
-    message("Using MiSeq naming format")
+    message("Using MiSeq/bcl2fastq (HiSeq3000) naming format")
     format <- "{{samplename}}_S[0-9]*_L00{{lane}}_R{{read}}_{{num}}.fastq.gz"
   }else if(grepl(".*_([ATGC]*|NoIndex).*L00([0-9]*)_R([0-9]*)_([0-9]*).fastq.gz",basename(x[1]))){
     ## ------ casava output
-    message("Using CASAVA naming format")
+    message("Using CASAVA 1.8 naming format")
     format <- "{{samplename}}_{{index}}_L00{{lane}}_R{{read}}_{{num}}.fastq.gz"
   }else{
     stop(c("Looks like we could not understand pattern in names of fastq files",

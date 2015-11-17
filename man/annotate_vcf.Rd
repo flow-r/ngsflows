@@ -2,7 +2,7 @@
 % Please edit documentation in R/annotate.R
 \name{annotate_vcf}
 \alias{annotate_vcf}
-\title{Title}
+\title{Not tested}
 \usage{
 annotate_vcf(x, oprefix, odir, build, use_uuid, annovarPath, protocols_f,
   protocols_g, ...)
@@ -27,6 +27,6 @@ annotate_vcf(x, oprefix, odir, build, use_uuid, annovarPath, protocols_f,
 \item{...}{}
 }
 \description{
-Title
+Not tested
 }
 
