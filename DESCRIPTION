@@ -1,7 +1,7 @@
 Package: ngsflows
 Type: Package
 Title: Robust Pipelines for Next-Generation Sequencing Analysis; A Companion Package for flowr
-Version: 0.3.10
+Version: 0.3.11
 Date: 2014-12-08
 Author: Sahil Seth
 Maintainer: Sahil Seth <sseth@mdanderson.org>
