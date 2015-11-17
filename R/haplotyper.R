@@ -2,6 +2,7 @@
 
 #' a wrapper around gatk haplotyper
 #' @param x input bam
+#' @details For more details refer to: https://www.broadinstitute.org/gatk/gatkdocs/org_broadinstitute_gatk_tools_CatVariants.php
 #' @export
 haplotyper <- function(x, 
                        samplename = get_opts("samplename"),
@@ -43,7 +44,7 @@ haplotyper <- function(x,
   if(missing(outfile))
     outfile = paste0(bam_prefix, "_merged_haplotyper.vcf")
   
-  cmd_merge = sprintf("%s %s -Djava.io.tmpdir=%s -jar %s -T CatVariants -R %s -o %s -assumeSorted %s",
+  cmd_merge = sprintf("%s %s -Djava.io.tmpdir=%s -cp  %s org.broadinstitute.gatk.tools.CatVariants -R %s -out %s -assumeSorted %s",
                       java_exe, java_mem, java_tmp, gatk_jar, ref_fasta, outfile, 
                       paste(" -V", outvcf, collapse = ""))
 
