@@ -145,6 +145,48 @@ picard_bam_fastq <- function(bam,
   return(list(flowmat = flowmat, outfiles = fqs))
 }
 
+#' Use picard's MergeSamFiles tool to merge bam/sam files
+#' 
+#' @description 
+#' The resulting file is sorted and index is created for it. 
+#' Validation stringency of inputs is kept as lenient.
+#' Multi-threading is turned on by default, though in our experience this does
+#' not seem to use a lot of threads.
+#' 
+#' @param x a vectors of files to merge
+#' @param mergedbam 
+#' @param samplename 
+#' @param java_exe 
+#' @param java_mem 
+#' @param java_tmp 
+#' @param picard_dir 
+#'
+#' @export
+picard_reorder <- function(x, outfile,
+                         samplename = get_opts("samplename"),
+                         
+                         java_exe = get_opts("java_exe"),
+                         java_mem = get_opts("java_mem"),
+                         java_tmp = get_opts("java_tmp"),
+                         picard_dir = get_opts("picard_dir"),
+                         picard_reorder_opts = get_opts("picard_reorder_opts"),
+                         
+                         ref_fasta = get_opts('ref_fasta'),
+                         samtools_exe = get_opts("samtools_exe")){
+
+  if(missing(outfile))
+    outfile = gsub(".bam$", "_reorder.bam", x)
+  
+  check_args()  
+  
+  reorder = sprintf("%s %s -Djava.io.tmpdir=%s -jar %s/picard.jar ReorderSam INPUT=%s OUTPUT=%s REFERENCE=%s;%s index %s",
+                              java_exe, java_mem, java_tmp, picard_dir, x, outfile, ref_fasta, samtools_exe, outfile)
+  
+  ## --- INPUT is a NAMED list
+  flowmat = to_flowmat(list(reorder = reorder), samplename)
+  return(list(flowmat = flowmat, outfiles = outfile))
+}
+
 
 if(FALSE){
   ## test example
