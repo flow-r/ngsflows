@@ -25,28 +25,13 @@
 #' Some GATK tools use \href{https://www.broadinstitute.org/gatk/guide/article?id=1975}{CPU threads while others use data threads},
 #' flowr tries to use efficiently make the best use of both/either depending on tool's compatibility.
 #' 
-#' @param inbam
-#' @param outbam
 #' @param q_obj is provided output is a flow object, else a list of commands to run
 #' @param java_exe path to java
 #' @param java_tmp path to java tmp, can leave blank
 #' @param cpu_markdup not used.
 #' @param java_mem_markdup memory provided to java
 #' @param cpu_target number of threads used for GATK target creation step
-#' @param java_mem_target
-#' @param cpu_realign
-#' @param java_mem_realign
-#' @param cpu_baserecalib
-#' @param java_mem_baserecalib
-#' @param cpu_printreads
-#' @param java_mem_printreads
-#' @param gatk_jar
-#' @param picard_dir
-#' @param reffa
-#' @param gatk_target_opt
-#' @param gatk_realign_opt
-#' @param gatk_baserecalib_opt
-#' @param printreads_opt
+#' 
 #' @export
 #' 
 #' @examples \dontrun{
@@ -108,8 +93,7 @@ preprocess <- function(x,
   pipename = match.call()[[1]]
   message("Generating a ", pipename, " flowmat for sample: ", samplename)
   
-  
-  ## ------------ dedup; SINGLE FILE
+  # ------------ dedup; SINGLE FILE
   dedupbam <- paste0(bam_prefix, ".marked.bam")
   metricsfile <- paste0(bam_prefix, ".marked.metrics")
   cmd_markdup <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s/picard.jar MarkDuplicates INPUT=%s OUTPUT=%s METRICS_FILE=%s REMOVE_DUPLICATES=false ASSUME_SORTED=true VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true",

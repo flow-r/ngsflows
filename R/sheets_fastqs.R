@@ -204,6 +204,7 @@ detect_fq_format <- function(x){
 #' @param pattern extensions this function will look for \emph{optional}
 #' @param fix.names change the sample names such that they are acceptable as column names for R
 #' @keywords samplesheet fastq casava
+#' 
 #' @export
 #' @examples
 #' \dontrun{
@@ -256,10 +257,11 @@ create_sample_sheet <- function(path, project, subproject, runid, format,
 
 
 #' @title split.names.fastq
-#' @description split.names.fastq
-#' given a format split the files provided. Tried and tested on fastq files
-#' @param files
-#' @param format
+#' @description Given a format split the files provided. Tried and tested on fastq files
+#' 
+#' @param files a character vector of filenames, to be parsed
+#' @param format the regex type format to be used to extract information from filenames. See default format as an example.
+#' 
 #' @export
 split_names_fastq <- function(files,format="$samplename$_$index$_L00$lane$_R$read$_$num$.fastq.gz"){
   ## process format:

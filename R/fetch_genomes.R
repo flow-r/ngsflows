@@ -1,12 +1,11 @@
 
 #' @title fetch_genomes
 #' @description fetch_genomes
-#' @param base_url
-#' @param species
-#' @param src
-#' @param build
-#' @param ... passed onto \link{fetch_genomes}
 #' 
+#' 
+#' @param genome_path output path to be used for downloading
+#' @param verbose logical specifying verboseness
+#' @param ... passed onto \link{fetch_genomes}
 #' 
 #' @export
 #' @importFrom curl curl_download
@@ -34,15 +33,23 @@ fetch_genomes <- function(genome_path = "~/flowr/genomes", verbose = FALSE,
 }
 
 
-#' @title avail_genomes
-#' @description avail_genomes
+
+
+#' Use Illumina's iGenomes and get a list of available genomes
+#'
+#' additional details
+#' 
 #' @param species species
-#' @param src src
+#' @param src source
 #' @param build build
 #' @param from from
-#' @param base_url
-#' @export
+#' @param base_url base url to be used
+#' @param verbose logical, specifying verboseness
+#' @param ... not used
+#' 
+#' @export 
 #' @importFrom RCurl getURL
+#' 
 #' @examples
 #' gen = avail_genomes(species = 'Homo_Sapiens', from = 'igenomes')
 avail_genomes <- function(species, src, build,
@@ -73,4 +80,3 @@ avail_genomes <- function(species, src, build,
   message("Example:\nfetch_genomes species=Homo_sapiens src=NCBI build=build37.2")
   invisible(list(lst = lst, url = url, type = type))
 }
-

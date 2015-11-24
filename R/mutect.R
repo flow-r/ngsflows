@@ -1,12 +1,21 @@
 
-#' Title
+#' A wrapper around somatic mutation caller MuTect
+#' 
+#' This generates a set of commandlines, per chromosome
 #'
-#' @param tumor_bam 
-#' @param normal_bam 
-#' @param samplename 
-#' @param outfile 
-#' @param is_merged 
-#' @param split_by_chr 
+#' @param tumor_bam path to a tumor bam file
+#' @param normal_bam path to a normal bam file
+#' @param samplename name of the sample, to be added to the flowmat
+#' @param outfile output file name [optional]
+#' @param is_merged specify if the input bam is already split by chromosomes (FALSE) or is a merged file with all chromosome (TRUE). [FALSE]
+#' @param split_by_chr fork running mutect by chromosome to make it faster.
+#' @param java_exe path to java's executable [java]
+#' @param java_tmp path to a temp folder to be used by java
+#' @param mutect_jar path to mutect's jar file
+#' @param cpu_mutect integer specifying number of thread to be used per mutect fork
+#' @param mem_mutect amount of memory to be used by mutect [-Xmx12g]
+#' @param ref_fasta path to the reference genome in fasta format
+#' @param mutect_opts additional arguments passed onto mutect
 #'
 #' @export
 #'
@@ -99,8 +108,8 @@ mutect <- function(tumor_bam, normal_bam,
 
 #' Title
 #'
-#' @param fl
-#' @param outfile
+#' @param fl a vector of files to be merged
+#' @param outfile path to the merged output file
 #'
 #' @export
 merge_sheets <- function(x, outfile, .filter = NA, ...){

@@ -142,16 +142,16 @@ star.2.4.2a <- function(fq1, fq2, bam,
 #'  star_cpu = get_opts("star_cpu"))
 #' 
 #' @param fq1 single fastq file
-#' @param fq2
+#' @param fq2 second read fastq file
 #' @param bam alternatively use of bam as input, instead of fqs
-#' @param samplename
-#' @param out_path
-#' @param out_prefix
-#' @param star_exe
-#' @param ref_fasta
-#' @param ref_star
-#' @param star_opts
-#' @param star_cpu
+#' @param samplename name of the sample
+#' @param out_path output path
+#' @param out_prefix output prefix
+#' @param star_exe path to star executable
+#' @param ref_fasta path to reference genome in fasta format
+#' @param ref_star path to star's reference index
+#' @param star_opts additional options passed onto star. This is a simple character vector appended to the commandline.
+#' @param star_cpu a integer specifying the number of cores to be used
 #' @export
 star <- star.2.4.2a
 

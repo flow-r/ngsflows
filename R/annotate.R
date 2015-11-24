@@ -22,20 +22,20 @@ if(FALSE){
 #'
 #' annotate variants
 #'
-#' @param x
-#' @param out_path
-#' @param out_file
-#' @param execute
-#' @param annovarPath
-#' @param db_path
-#' @param build
-#' @param protocols_g
-#' @param protocols_f
-#' @param chr
-#' @param start
-#' @param end
-#' @param ref
-#' @param alt
+#' @param x A data.frame or a file with an extension recognized by read_sheet
+#' @param out_path output path
+#' @param out_file output file
+#' @param execute logical, run annovar dry-run
+#' @param annovarPath Path to annovar executable
+#' @param db_path path to annovar database
+#' @param build build version of the input files
+#' @param protocols_g region-type annotation databases, see Annovar's website for details
+#' @param protocols_f filter-type annotation databases, see Annovar's website for details
+#' @param chr column which represents the chromosome
+#' @param start column representing start location
+#' @param end column representing end location
+#' @param ref column representing reference allele
+#' @param alt column representing alternate allele
 #'
 #' @importFrom stringr str_c
 #' @importFrom params read_sheet
@@ -207,35 +207,6 @@ fix_chrnames <- function(mutMat, build){
 #' annotate_mutect
 #'
 #' @param x a mutect file
-#' @param odir
-#' @param oprefix
-#' @param tumorBAM
-#' @param normalBAM
-#' @param organism
-#' @param build
-#' @param annovarPath
-#' @param protocols_g
-#' @param protocols_f
-#' @param chrom
-#' @param start
-#' @param end
-#' @param ref
-#' @param alt
-#' @param reCount
-#' @param tempDir
-#' @param dbtype
-#' @param dataset
-#' @param interpro
-#' @param samtoolPath
-#' @param unipro
-#' @param full annotate ALL the variants (even those rejected by mutect)
-#' @param snpV
-#' @param uniqueOnly
-#' @param mapQ
-#' @param sName
-#' @param nName
-#' @param sep
-#' @param cores
 #'
 #' @export
 #'
@@ -334,16 +305,6 @@ annotate_mutect <- function(x, odir, oprefix,
 
 #' Not tested
 #'
-#' @param x
-#' @param oprefix
-#' @param odir
-#' @param build
-#' @param use_uuid
-#' @param annovarPath
-#' @param protocols_f
-#' @param protocols_g
-#' @param ...
-#'
 #' @export
 annotate_vcf <- function(x, oprefix, odir,
                          build, use_uuid,
@@ -372,11 +333,11 @@ annotate_pindel <- function(){
 }
 
 
-#' Annotate variants using Annovar
+#' Generates a cmdline, when invoked annotates files using annovar
 #'
-#' @param x mutect files
-#' @param samplename
-#' @param outfile this is the final merged file
+#' @param x files to be annotates
+#' @param samplename name of the sample, to be added to the flowmat
+#' @param outfile name of the final merged file.
 #'
 #' @export
 annotate <- function(x, samplename = get_opts("samplename"),
