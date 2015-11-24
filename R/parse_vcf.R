@@ -1,6 +1,6 @@
 
 #' Parse a VCF file into a TSV to be processed and annotated
-#' 
+#'
 #' @param x a vcf file to be parsed
 #'
 #' @export
@@ -8,23 +8,23 @@ parse_vcf <- function(x){
   require(data.table)
   require(dplyr)
   require(parallel)
-  
+
   message("Reading file...")
-  
+
   hd = scan(x, what = "character", sep = "\n", n = 1000, quiet = TRUE) ##assuming that header is not longer than 100
   hd_row = grep("#CHROM", hd)
   hd = tolower(strsplit(hd[hd_row], "\t")[[1]])
   tab = fread(x, data.table = FALSE, header = FALSE, skip = hd_row, sep = "\t", colClasses = "character")
   colnames(tab) = gsub("#chrom", "chrom", hd)
   tab = tbl_df(tab)
-  
+
   message("Parsing format columns...")
   samp = colnames(tab)[grep("format", colnames(tab)) + 1]
   cols = splt_vcf_format(x = tab[, samp], format = tab$format, prefix = "")
-  
+
   message("Parsing info columns...")
   infocols = splt_vcf_info(tab$info)
-  
+
   colsel = !colnames(tab) %in% c("format", samp, "info")
   message("Assembling data")
   tab = tbl_df(cbind(tab[, colsel], cols, infocols))
@@ -66,7 +66,7 @@ splt_vcf_info <- function(x){
 
 splt_vcf_func <- function(x){
   x = as.character(unlist(x))
-  
+
   splt_func <- function(i){
     str_replace_all(x[i], pattern = "\\]", "")
     xi = gsub("[{", "", gsub("}]", "", x[i], fixed = TRUE), fixed = TRUE)
@@ -78,7 +78,7 @@ splt_vcf_func <- function(x){
     ret = as.data.frame(t(vals), stringsAsFactors = FALSE)
     return(ret)
   }
-  
+
   lst <- lapply(1:length(x), function(i){
     y = try(splt_func(i))
     ifelse(class(y)=="try-error", "", y)
@@ -91,7 +91,7 @@ splt_vcf_func <- function(x){
 format_vcf_info_ion <- function(x){
   x$freqt = gsub("Freq", "", x$freqt)
   x$freqn = gsub("Freq", "", x$freqn)
-  
+
 }
 
 
@@ -121,7 +121,7 @@ parse_somatic_vcf <- function(x, samp, ref){
   infocols = splt_vcf_info(mat$info)
   message("Parsing func...")
   #funccols = splt_vcf_func(mat$func)
-  #infocols[1:100,] %>% View()	
+  #infocols[1:100,] %>% View()
   mat$t_sample = samp
   mat$n_sample = ref
   colsel = !colnames(mat) %in% c("format", samp, ref, "info")
@@ -132,12 +132,9 @@ parse_somatic_vcf <- function(x, samp, ref){
 }
 
 if(FALSE){
-  
+
   source('~/Dropbox/public/github_ngsflows/R/parse_vcfs.R')
   x='/rsrch2/iacs/iacs_dep/sseth/flowr/runs/flowr_test/fastq_haplotyper-MS132-20150824-16-37-58-XScJT0OZ/tmp/GLizee-Pancreatic-MS132-MP013normalDNA.recalibed_1.haplotyper.vcf'
   x2 = parse_vcf(x)
-  
+
 }
-
-
-

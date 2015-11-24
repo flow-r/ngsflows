@@ -122,7 +122,7 @@ annotate_variants <- function(x, outpath, outfile,
   ## --- outfile is w/o extension (annovar adds multianno extension on its own later)
   if(missing(outfile))
     outfile = sprintf("%s/%s.tsv", outpath, tools::file_path_sans_ext(basename(input)))
-  
+
     #outfile = file.path(outpath, tools::file_path_sans_ext(basename(input)))
 
   message("Using ", outfile, " as the final output file")
@@ -340,10 +340,10 @@ annotate_pindel <- function(){
 #' @param outfile name of the final merged file.
 #'
 #' @export
-annotate <- function(x, samplename = get_opts("samplename"),
+annotate <- function(x, samplename = opts_flow$get("samplename"),
                      outfile,
                      build = "hg19",
-                     annovar_dir = get_opts("annovar_dir"),
+                     annovar_dir = opts_flow$get("annovar_dir"),
                      annotate_func = "ngsflows::annotate_mutect"){
 
   if(missing(outfile))
@@ -381,4 +381,3 @@ if(FALSE){
 
 
 }
-

@@ -32,16 +32,16 @@ split_names_fastq2 <- function(x, format = "{{samplename}}_{{index}}_L00{{lane}}
     lane = "([0-9]*)",
     read = "([0-9]*)", ## ideally would be 1 OR 2
     num = "([0-9]*)")
-  
+
   ## --- replace and get final pattern !
   tmp = whisker_render(format, lst_patterns)
   fmt = tmp$out
   vars = tmp$vars
-  
+
   ## get the parse matrix
   repl <- paste("\\",1:length(vars), sep="",collapse=",")
   mat <- gsub(fmt, repl, basename(x))
-  
+
   ## longer, but more robust
   mat = lapply(1:length(mat), function(i){
     out = strsplit(mat[i], ",")[[1]]
@@ -53,10 +53,10 @@ split_names_fastq2 <- function(x, format = "{{samplename}}_{{index}}_L00{{lane}}
     return(out)
   })
   warnings()
-  
+
   mat <- do.call(rbind, mat)
   mat <- data.frame(mat, x, stringsAsFactors = FALSE)
-  
+
   ## if all files were not parsed properly
   ## show extra message, to help debug
   ## This does not catch, when some file are parsed improperly.
@@ -66,22 +66,22 @@ split_names_fastq2 <- function(x, format = "{{samplename}}_{{index}}_L00{{lane}}
     print(head(mat))
     stop("Exiting create_fq_sheet...")
   }
-  
+
   ## if all is well
   colnames(mat) <- c(vars, "file")
   return(mat)
 }
 
 #' check_fastq_sheet
-#' 
-#' Checks the nuber of samples, and that number of files in each sample should be 
+#'
+#' Checks the nuber of samples, and that number of files in each sample should be
 #' same for each read (if paired end)
 #' @param x a data.frame with details regarding fastq files
-#' 
+#'
 #' @export
-check_fastq_sheet <- function(x, 
-                              id_column = "samplename", 
-                              file_column = "file", 
+check_fastq_sheet <- function(x,
+                              id_column = "samplename",
+                              file_column = "file",
                               read_column = "read"){
   mat = x
   message("There are ", length(unique(mat[, id_column])), " samples in this dataset")
@@ -112,32 +112,32 @@ options(
 #' @param format auto detect. Pattern specify pattern acceptable to split_fastq_names. If missing will detect hiseq and miseq
 #' @param sample_prefix A prefix to add to all sample names, run, project etc.....
 #' @export
-create_fq_sheet <- function(x, 
-                            ext = get_opts("fastq_extension"),
-                            format = get_opts("fastq_format"),
+create_fq_sheet <- function(x,
+                            ext = opts_flow$get("fastq_extension"),
+                            format = opts_flow$get("fastq_format"),
                             sample_prefix = ""){
-  
+
   ## get the extension to use
   if(is.null(ext)) ext = "fastq.gz|fastq"
   if(!grepl("$", ext, fixed = TRUE))
     ext = paste0(ext, "$") ## add a dollar
-  
+
   ## fetch the files to parse
   fqs <- unlist(lapply(x, list.files, pattern = ext, full.names=TRUE,recursive=TRUE))
   if(length(fqs) == 0)
     stop("no fastq files found. Please check the folder provided.")
-  
+
   ## get the format to use
   if(missing(format))
     format <- detect_fq_format2(fqs)
   if(is.null(format))
     format <- detect_fq_format2(fqs)
-  
+
   fqmat <- split_names_fastq2(fqs, format)
-  
+
   ## if one needs to change the samplename to include anything in this
   fqmat$samplename = paste0(sample_prefix, fqmat$samplename)
-  
+
   return(fqmat)
 }
 
@@ -147,7 +147,7 @@ if(FALSE){
   x = "/rsrch1/genetics/htep/hiseq/150707_ST-J00106_0022_AH35LGBBXX/Unaligned/YLD-NS-KO_RNA109"
   fqmat = create_fq_sheet(x)
   fqmat = check_fastq_sheet(fqmat)
-  
+
 }
 
 ########################## ------------------- functions below are not used
@@ -158,12 +158,12 @@ if(FALSE){
 
 
 if(FALSE){
-  
+
   path = "/rsrch1/genetics/htep/hiseq/150707_ST-J00106_0022_AH35LGBBXX/Unaligned/YLD-NS-KO_RNA109"
   runid= "140626_M01692_0046_000000000-A99M8"
   runid="140627_M01692_0047_000000000-A9J0V";
   #debug(create_sample_mat)
-  
+
   path=sprintf("/scratch/iacs/gcc/leveli/%s",runid)
   fq_mat <- create_sample_mat(path,project="ANDY",subproject="Futreal-AS", runid=runid,
                               outpath="~/flows/ANDY-Futreal-AS")
@@ -204,7 +204,7 @@ detect_fq_format <- function(x){
 #' @param pattern extensions this function will look for \emph{optional}
 #' @param fix.names change the sample names such that they are acceptable as column names for R
 #' @keywords samplesheet fastq casava
-#' 
+#'
 #' @export
 #' @examples
 #' \dontrun{
@@ -215,7 +215,7 @@ create_sample_sheet <- function(path, project, subproject, runid, format,
                                 out_sep = c("\t", ","),
                                 include.undetermined = FALSE,
                                 pattern = "fastq.gz|fq.gz|fastq|fq", outfile){
-  
+
   message("Fetching path(s) for fastq files...\n")
   .Deprecated("create_fq_sheet")
   fqs <- unlist(lapply(path, list.files, pattern = pattern,full.names=TRUE,recursive=TRUE))
@@ -258,10 +258,10 @@ create_sample_sheet <- function(path, project, subproject, runid, format,
 
 #' @title split.names.fastq
 #' @description Given a format split the files provided. Tried and tested on fastq files
-#' 
+#'
 #' @param files a character vector of filenames, to be parsed
 #' @param format the regex type format to be used to extract information from filenames. See default format as an example.
-#' 
+#'
 #' @export
 split_names_fastq <- function(files,format="$samplename$_$index$_L00$lane$_R$read$_$num$.fastq.gz"){
   ## process format:
@@ -282,5 +282,3 @@ split_names_fastq <- function(files,format="$samplename$_$index$_L00$lane$_R$rea
   return(mat)
 }
 split.names.fastq=split_names_fastq
-
-
