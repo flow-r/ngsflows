@@ -54,7 +54,7 @@ mutect <- function(tumor_bam, normal_bam,
   else
     bam_prefix <- outfile
 
-    if(missing)
+    if(missing(is_merged))
       is_merged = !as.logical(opts_flow$get("split_by_chr"))
 
   ## if file is available determine whether to split for faster processing
