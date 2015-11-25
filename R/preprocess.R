@@ -103,7 +103,7 @@ preprocess <- function(x,
   ## ------------ realign; SINGLE FILE
   intervalsfiles <- paste0(bam_prefix, ".realign.intervals")
   ## ------------ do this for all chrs
-  cmd_target <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s -T RealignerTargetCreator -R %s -I %s -o %s -nt %s",
+  cmd_target <- sprintf("%s %s -Djava.io.tmpdir=%s -jar %s -T RealignerTargetCreator -R %s -I %s -o %s -nt %s %s",
                         java_exe, mem_target, java_tmp, gatk_jar, ref_fasta, dedupbam,
                         intervalsfiles, cpu_target, gatk_target_opts)
 
