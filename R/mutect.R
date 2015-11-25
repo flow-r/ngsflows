@@ -71,7 +71,7 @@ mutect <- function(tumor_bam, normal_bam,
       stop("multiple bams supplied, expected 1; perhaps is_merged should be FALSE?")
 
     }else if(!is_merged & length(tumor_bam) == 1){
-      stop("single bam supplied, expected multiple (one fo each chromosome); perhaps is_merged should be TRUE")
+      stop("single bam supplied, expected multiple (one for each chromosome); perhaps is_merged should be TRUE")
     }
   }else{
   ## dont split

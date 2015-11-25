@@ -227,19 +227,7 @@ annotate_mutect <- function(x, odir, oprefix,
                             chrom = "contig", start = "position",
                             end = "position", ref = "ref_allele", alt = "alt_allele",
 
-
-                            reCount = TRUE,
-
-                            use_uuid = TRUE,
-
-                            ## these options are not really used
-                            tempDir = "/scratch/iacs/tmp",
-                            dbtype = c("knowngene", "refgene"),
-                            dataset = "hsapiens_gene_ensembl",
-                            interpro = "/IACS1/annotations/ensGene_Interpro.nonredunct.txt",
-                            samtoolPath = "/scratch/rists/hpcapps/x86_64/samtools/0.1.19",
-                            unipro = FALSE, snpV = 129, uniqueOnly = TRUE,
-                            mapQ = 10, sName = "sample", nName = "ref", sep = "_", cores = 4){
+                            use_uuid = TRUE){
 
   require(parallel) ## used is split by chrs
   ## -- get missing values if missing
@@ -340,18 +328,20 @@ annotate_pindel <- function(){
 #' @param outfile name of the final merged file.
 #'
 #' @export
-annotate <- function(x, samplename = opts_flow$get("samplename"),
+annotate <- function(files, samplename = opts_flow$get("samplename"),
                      outfile,
                      build = "hg19",
                      annovar_dir = opts_flow$get("annovar_dir"),
                      annotate_func = "ngsflows::annotate_mutect"){
 
   if(missing(outfile))
-    outfile <- paste0(tools::file_path_sans_ext(basename(x[1])),  "_merged.annovar.tsv")
+    outfile <- paste0(tools::file_path_sans_ext(basename(files[1])),  "_merged.annovar.tsv")
 
   check_args(ignore = "outfile")
 
-  anns = paste0(tools::file_path_sans_ext(basename(x)), "_annovar.txt")
+  # output file names
+  anns = paste0(tools::file_path_sans_ext(basename(files)), "_annovar.txt")
+
   cmd_ann = sprintf("flowr %s x=%s oprefix=%s build=%s full=TRUE use_uuid=FALSE annovarPath=%s",
                     annotate_func, x, anns, build, annovar_dir)
 

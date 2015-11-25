@@ -1,5 +1,8 @@
 
-#'
+# this pipelines imports the following:
+# source(fetch_pipes('fastq_bam_bwa', last_only = TRUE)$pip)
+
+
 #' fastq_haplotyper
 #' @param fqs1
 #' @param fqs2
@@ -45,11 +48,10 @@ fastq_preprocess <- function(fqs1, fqs2,
   message("> processing fastq_bam_bwa ...")
   ## fetch the latest fastq_bam_bwa pipe
   #source("~/Dropbox/public/github_ngsflows/inst/pipelines/fastq_bam_bwa.R")
-  source(fetch_pipes('fastq_bam_bwa', last_only = TRUE)$pip)
   f_merge = fastq_bam_bwa(fqs1, fqs2)
 
   message("> processing bam_preprocess")
-  f_preproc = preprocess(f_merge$outfile)
+  f_preproc = preprocess(f_merge$outfiles)
 
   flowmat = rbind(f_merge$flowmat, f_preproc$flowmat)
 

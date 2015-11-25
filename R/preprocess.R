@@ -44,7 +44,7 @@
 preprocess <- function(x,
                        outfile,
                        samplename = opts_flow$get("samplename"),
-                       split_by_chr = FALSE,
+                       split_by_chr = opts_flow$get("split_by_chr"),
 
                        java_exe = opts_flow$get("java_exe"),
                        java_tmp = opts_flow$get("java_tmp"),
@@ -132,7 +132,7 @@ preprocess <- function(x,
                baserecalib = cmd_baserecalib, printreads = cmd_printreads)
 
   flowmat = to_flowmat(cmds, samplename = samplename)
-  return(list(flowmat=flowmat, outfile = recalibbams))
+  return(list(flowmat=flowmat, outfiles = recalibbams))
 
 }
 
