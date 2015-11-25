@@ -13,38 +13,37 @@ check_params <- function(x){
 #' picard_rg
 #' @export
 #' @importFrom tools file_path_sans_ext
-picard_rg <- function(x,
+picard_rg <- function(x, 
                       samplename = opts_flow$get("samplename"),
-                      lane = "lane1",
                       ## convert these into get option also, only for this flow
-                      seq_platform = "illumina",
-                      center = "MDA",
+                      rg_lane = opts_flow$get("rg_lane"),
+                      rg_platform = opts_flow$get("rg_platform"),
+                      rg_center = opts_flow$get("rg_center"),
+                      
                       java_exe = opts_flow$get("java_exe"),
                       java_mem = opts_flow$get("java_mem"),
                       java_tmp = opts_flow$get("java_tmp"),
-                      picard_dir = opts_flow$get("picard_dir")
-){
-
-
+                      picard_jar = opts_flow$get("picard_jar")){
+  
+  
   check_args()
 
   ## make this editable later ....
   rgid = rglb = rgsm = samplename
-  rgpu = lane
-
+  rgpu = rg_lane
+  
   ## add RG to the orignal bam name
-  bamrg_files = sprintf("%s_rg.bam", file_path_sans_ext(x))
-  cmds = list(fixrg = sprintf("%s %s -Djava.io.tmpdir=%s -jar %s/picard.jar AddOrReplaceReadGroups INPUT=%s OUTPUT=%s SORT_ORDER=coordinate RGID=%s RGLB=%s RGPL=%s RGPU=%s RGSM=%s RGCN=%s VALIDATION_STRINGENCY=LENIENT",
-                              java_exe, java_mem, java_tmp, picard_dir,
-                              x, bamrg_files, rgid, rglb,
-                              seq_platform, rgpu, rgsm, center))
-
+  bamrg_files = sprintf("%s_rg.bam", tools::file_path_sans_ext(x))
+  cmds = list(fixrg = sprintf("%s %s -Djava.io.tmpdir=%s -jar %s AddOrReplaceReadGroups INPUT=%s OUTPUT=%s SORT_ORDER=coordinate RGID='%s' RGLB='%s' RGPL='%s' RGPU='%s' RGSM='%s' RGCN='%s' VALIDATION_STRINGENCY=LENIENT",
+                              java_exe, java_mem, java_tmp, picard_jar, 
+                              x, bamrg_files, rgid, rglb, 
+                              rg_platform, rgpu, rgsm, rg_center))
+  
   flowmat = to_flowmat(cmds, samplename)
   ret = list(outfiles = bamrg_files, flowmat = flowmat)
   return(ret)
-
+  
 }
-
 
 #' Use picard's MergeSamFiles tool to merge bam/sam files
 #'
@@ -70,15 +69,15 @@ picard_merge <- function(x,
                          java_mem = opts_flow$get("java_mem"),
                          java_tmp = opts_flow$get("java_tmp"),
                          picard_dir = opts_flow$get("picard_dir")){
-
-
-
+  
+  
+  
   check_args()
-
+  
   bam_list = paste("INPUT=", x, sep = "", collapse = " ")
   cmds = list(merge = sprintf("%s %s -Djava.io.tmpdir=%s -jar %s/picard.jar MergeSamFiles %s OUTPUT=%s ASSUME_SORTED=TRUE VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true USE_THREADING=true",
                               java_exe, java_mem, java_tmp, picard_dir, bam_list, mergedbam))
-
+  
   ## --- INPUT is a NAMED list
   flowmat = to_flowmat(cmds, samplename)
   return(list(outfiles = mergedbam, flowmat = flowmat))
@@ -107,10 +106,10 @@ picard_bam_fastq <- function(bam,
                              java_tmp = opts_flow$get("java_tmp"),
                              picard_dir = opts_flow$get("picard_dir"),
                              bam_fastq_opts = "INCLUDE_NON_PF_READS=true INCLUDE_NON_PRIMARY_ALIGNMENTS=false RE_REVERSE=true VALIDATION_STRINGENCY=LENIENT"){
-
+  
   check_args()
-
-
+  
+  
   if(paired){
     fq1 = gsub(".bam$", "_1.fastq", bam)
     fq2 = gsub(".bam$", "_2.fastq", bam)
@@ -119,27 +118,27 @@ picard_bam_fastq <- function(bam,
     fqout = sprintf("FASTQ=%s SECOND_END_FASTQ=%s UNPAIRED_FASTQ=%s",
                     fq1, fq2, fq3)
     # we would stream picard into creating splitted fq files. A second flow would read these and start the next step.
-
+    
   }else{
     fq1 = gsub(".bam$", ".fastq", bam)
     fqout = paste0("FASTQ=", fq1)
     fqs = list(fq1 = fq1)
   }
-
+  
   if(split){
     fq = gsub(".bam$", "", bam)
     fqout = sprintf("FASTQ=/dev/stdout INTERLEAVE=true | bash %s -n %s -f /dev/stdin -o %s",
                     split_fq_exe, as.integer(num_reads), fq)
   }
-
-
+  
+  
   bam_fastq = sprintf("%s %s -Djava.io.tmpdir=%s -jar %s/picard.jar SamToFastq INPUT=%s %s %s",
-                                 java_exe, java_mem, java_tmp, picard_dir, bam, bam_fastq_opts, fqout)
-
-
+                      java_exe, java_mem, java_tmp, picard_dir, bam, bam_fastq_opts, fqout)
+  
+  
   cmd = list(bam_fastq = bam_fastq)
   #system(unlist(cmd))
-
+  
   # INPUT is a NAMED list ------
   flowmat = to_flowmat(cmd, samplename)
   return(list(flowmat = flowmat, outfiles = fqs))
@@ -163,23 +162,23 @@ picard_bam_fastq <- function(bam,
 #'
 #' @export
 picard_reorder <- function(x, outfile,
-                         samplename = opts_flow$get("samplename"),
-                         java_exe = opts_flow$get("java_exe"),
-                         java_mem = opts_flow$get("java_mem"),
-                         java_tmp = opts_flow$get("java_tmp"),
-                         picard_dir = opts_flow$get("picard_dir"),
-                         picard_reorder_opts = opts_flow$get("picard_reorder_opts"),
-                         ref_fasta = opts_flow$get('ref_fasta'),
-                         samtools_exe = opts_flow$get("samtools_exe")){
-
+                           samplename = opts_flow$get("samplename"),
+                           java_exe = opts_flow$get("java_exe"),
+                           java_mem = opts_flow$get("java_mem"),
+                           java_tmp = opts_flow$get("java_tmp"),
+                           picard_dir = opts_flow$get("picard_dir"),
+                           picard_reorder_opts = opts_flow$get("picard_reorder_opts"),
+                           ref_fasta = opts_flow$get('ref_fasta'),
+                           samtools_exe = opts_flow$get("samtools_exe")){
+  
   if(missing(outfile))
     outfile = gsub(".bam$", "_reorder.bam", x)
-
+  
   check_args()
-
+  
   reorder = sprintf("%s %s -Djava.io.tmpdir=%s -jar %s/picard.jar ReorderSam INPUT=%s OUTPUT=%s REFERENCE=%s;%s index %s",
-                              java_exe, java_mem, java_tmp, picard_dir, x, outfile, ref_fasta, samtools_exe, outfile)
-
+                    java_exe, java_mem, java_tmp, picard_dir, x, outfile, ref_fasta, samtools_exe, outfile)
+  
   ## --- INPUT is a NAMED list
   flowmat = to_flowmat(list(reorder = reorder), samplename)
   return(list(flowmat = flowmat, outfiles = outfile))
@@ -191,13 +190,13 @@ if(FALSE){
   fqs1 = rep("read1.fq", 20)
   fqs2 = rep("read2.fq", 20)
   out_bwa = bwa(fqs1 = rep("read1.fq", 20),fqs2 = rep("read2.fq", 20))
-
+  
   undebug(to_flowmat)
   #debug(picard_rg);
   out_pic = picard_rg(x = out_bwa$outfiles, samplename = "smp")
-
-
-
-
-
+  
+  
+  
+  
+  
 }

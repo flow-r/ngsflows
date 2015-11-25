@@ -30,6 +30,7 @@
 mutect <- function(tumor_bam, normal_bam,
                    samplename = opts_flow$get("samplename"),
                    outfile,
+
                    is_merged = TRUE,
                    split_by_chr = TRUE,
 
@@ -52,6 +53,9 @@ mutect <- function(tumor_bam, normal_bam,
     bam_prefix <- gsub(".bam", "", basename(normal_bam))
   else
     bam_prefix <- outfile
+
+    if(missing)
+      is_merged = !as.logical(opts_flow$get("split_by_chr"))
 
   ## if file is available determine whether to split for faster processing
   ## even if the bam files are pre-split its better to explicitily supply the
