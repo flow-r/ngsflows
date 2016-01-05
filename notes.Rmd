@@ -1,0 +1,17 @@
+
+
+
+Adding this to DRAT repo
+
+```{r}
+
+# insert package
+pkg = devtools::build(".")
+out = drat::insertPackage(pkg, "~/Dropbox/public/github_drat", commit = TRUE)
+
+# push repo
+system("cd ~/Dropbox/public/github_drat;git push")
+
+	
+```
+
