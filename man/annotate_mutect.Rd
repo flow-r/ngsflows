@@ -8,12 +8,7 @@ annotate_mutect(x, odir, oprefix, tumorBAM, normalBAM, organism = "human",
   build, annovarPath = "/scratch/iacs/apps/annovar/latest", protocols_g,
   protocols_f, full = FALSE, chrom = "contig", start = "position",
   end = "position", ref = "ref_allele", alt = "alt_allele",
-  reCount = TRUE, use_uuid = TRUE, tempDir = "/scratch/iacs/tmp",
-  dbtype = c("knowngene", "refgene"), dataset = "hsapiens_gene_ensembl",
-  interpro = "/IACS1/annotations/ensGene_Interpro.nonredunct.txt",
-  samtoolPath = "/scratch/rists/hpcapps/x86_64/samtools/0.1.19",
-  unipro = FALSE, snpV = 129, uniqueOnly = TRUE, mapQ = 10,
-  sName = "sample", nName = "ref", sep = "_", cores = 4)
+  use_uuid = TRUE)
 }
 \arguments{
 \item{x}{a mutect file}

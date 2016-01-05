@@ -9,9 +9,9 @@ star.2.4.2a
 
 star(fq1, fq2, bam,
  samplename = "samp1", out_path, out_prefix,
- ref_fasta = get_opts("ref_fasta"), ref_star = get_opts("ref_star"),
- star_exe = get_opts("star_exe"), star_opts = get_opts("star_opts"),
- star_cpu = get_opts("star_cpu"))
+ ref_fasta = opts_flow$get("ref_fasta"), ref_star = opts_flow$get("ref_star"),
+ star_exe = opts_flow$get("star_exe"), star_opts = opts_flow$get("star_opts"),
+ star_cpu = opts_flow$get("star_cpu"))
 }
 \arguments{
 \item{fq1}{single fastq file}

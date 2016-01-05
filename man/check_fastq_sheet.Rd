@@ -11,7 +11,7 @@ check_fastq_sheet(x, id_column = "samplename", file_column = "file",
 \item{x}{a data.frame with details regarding fastq files}
 }
 \description{
-Checks the nuber of samples, and that number of files in each sample should be 
+Checks the nuber of samples, and that number of files in each sample should be
 same for each read (if paired end)
 }
 

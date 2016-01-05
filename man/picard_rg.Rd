@@ -4,10 +4,14 @@
 \alias{picard_rg}
 \title{picard_rg}
 \usage{
-picard_rg(x, samplename = get_opts("samplename"), lane = "lane1",
-  seq_platform = "illumina", center = "MDA",
-  java_exe = get_opts("java_exe"), java_mem = get_opts("java_mem"),
-  java_tmp = get_opts("java_tmp"), picard_dir = get_opts("picard_dir"))
+picard_rg(x, samplename = opts_flow$get("samplename"),
+  rg_lane = opts_flow$get("rg_lane"),
+  rg_platform = opts_flow$get("rg_platform"),
+  rg_center = opts_flow$get("rg_center"),
+  java_exe = opts_flow$get("java_exe"),
+  java_mem = opts_flow$get("java_mem"),
+  java_tmp = opts_flow$get("java_tmp"),
+  picard_jar = opts_flow$get("picard_jar"))
 }
 \description{
 picard_rg

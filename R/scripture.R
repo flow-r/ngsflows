@@ -1,6 +1,6 @@
 
 
-set_opts(java_exe = "module load jdk/1.8.0_45; java",
+opts_flow$set(java_exe = "module load jdk/1.8.0_45; java",
          peak_fdr = 0.05)
 
 scripture <- function(x,

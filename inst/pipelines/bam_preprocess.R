@@ -6,7 +6,7 @@ if(FALSE){
   out = bam_preprocess(bam, samplename = "127390-T", split_by_chr = TRUE)
   pip = fetch_pipes("bam_preprocess")
 
-  set_opts(verbose = FALSE)
+  opts_flow$set(verbose = FALSE)
   def = as.flowdef(pip$def)
 
   fobj = to_flow(out$flowmat, pip$def)

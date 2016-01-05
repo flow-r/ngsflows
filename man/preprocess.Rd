@@ -4,20 +4,24 @@
 \alias{preprocess}
 \title{Pre-process bam files following Broad's best practices for variant calling, starting from aligned BAM file}
 \usage{
-preprocess(x, outfile, samplename = get_opts("samplename"),
-  split_by_chr = FALSE, java_exe = get_opts("java_exe"),
-  java_tmp = get_opts("java_tmp"), gatk_jar = get_opts("gatk_jar"),
-  picard_dir = get_opts("picard_dir"),
-  samtools_exe = get_opts("samtools_exe"), cpu_markdup = 1,
-  mem_markdup = "-Xmx8g", cpu_target = get_opts("cpu_target"),
-  mem_target = "-Xmx32g", cpu_realign = get_opts("cpu_realign"),
-  mem_realign = "-Xmx4g", cpu_baserecalib = get_opts("cpu_baserecalib"),
-  mem_baserecalib = "-Xmx4g", cpu_printreads = get_opts("cpu_printreads"),
-  mem_printreads = "-Xmx4g", ref_fasta = get_opts("ref_fasta"),
-  gatk_target_opts = get_opts("gatk_target_opts"),
-  gatk_realign_opts = get_opts("gatk_realign_opts"),
-  gatk_baserecalib_opts = get_opts("gatk_baserecalib_opts"),
-  gatk_printreads_opts = get_opts("gatk_printreads_opts"))
+preprocess(x, outfile, samplename = opts_flow$get("samplename"),
+  split_by_chr = opts_flow$get("split_by_chr"),
+  java_exe = opts_flow$get("java_exe"),
+  java_tmp = opts_flow$get("java_tmp"),
+  gatk_jar = opts_flow$get("gatk_jar"),
+  picard_dir = opts_flow$get("picard_dir"),
+  samtools_exe = opts_flow$get("samtools_exe"), cpu_markdup = 1,
+  mem_markdup = "-Xmx8g", cpu_target = opts_flow$get("cpu_target"),
+  mem_target = "-Xmx32g", cpu_realign = opts_flow$get("cpu_realign"),
+  mem_realign = "-Xmx4g",
+  cpu_baserecalib = opts_flow$get("cpu_baserecalib"),
+  mem_baserecalib = "-Xmx4g",
+  cpu_printreads = opts_flow$get("cpu_printreads"),
+  mem_printreads = "-Xmx4g", ref_fasta = opts_flow$get("ref_fasta"),
+  gatk_target_opts = opts_flow$get("gatk_target_opts"),
+  gatk_realign_opts = opts_flow$get("gatk_realign_opts"),
+  gatk_baserecalib_opts = opts_flow$get("gatk_baserecalib_opts"),
+  gatk_printreads_opts = opts_flow$get("gatk_printreads_opts"))
 }
 \arguments{
 \item{java_exe}{path to java}

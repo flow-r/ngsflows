@@ -4,11 +4,15 @@
 \alias{mutect}
 \title{A wrapper around somatic mutation caller MuTect}
 \usage{
-mutect(tumor_bam, normal_bam, samplename = get_opts("samplename"), outfile,
-  is_merged = TRUE, split_by_chr = TRUE, java_exe = get_opts("java_exe"),
-  java_tmp = get_opts("java_tmp"), mutect_jar = get_opts("mutect_jar"),
-  cpu_mutect = get_opts("cpu_mutect"), mem_mutect = get_opts("java_mem"),
-  ref_fasta = get_opts("ref_fasta"), mutect_opts = get_opts("mutect_opts"))
+mutect(tumor_bam, normal_bam, samplename = opts_flow$get("samplename"),
+  outfile, is_merged = TRUE, split_by_chr = TRUE,
+  java_exe = opts_flow$get("java_exe"),
+  java_tmp = opts_flow$get("java_tmp"),
+  mutect_jar = opts_flow$get("mutect_jar"),
+  cpu_mutect = opts_flow$get("cpu_mutect"),
+  mem_mutect = opts_flow$get("java_mem"),
+  ref_fasta = opts_flow$get("ref_fasta"),
+  mutect_opts = opts_flow$get("mutect_opts"))
 }
 \arguments{
 \item{tumor_bam}{path to a tumor bam file}

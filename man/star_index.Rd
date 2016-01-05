@@ -4,9 +4,10 @@
 \alias{star_index}
 \title{star_index}
 \usage{
-star_index(ref_star = get_opts("ref_star"), star_exe = get_opts("star_exe"),
-  ref_fasta = get_opts("ref_fasta"), star_cpu = get_opts("star_cpu"),
-  ref_gtf = get_opts("ref_gtf"))
+star_index(ref_star = opts_flow$get("ref_star"),
+  star_exe = opts_flow$get("star_exe"),
+  ref_fasta = opts_flow$get("ref_fasta"),
+  star_cpu = opts_flow$get("star_cpu"), ref_gtf = opts_flow$get("ref_gtf"))
 }
 \description{
 a helper function to create a index, incase it does not exits

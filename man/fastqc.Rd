@@ -4,23 +4,11 @@
 \alias{fastqc}
 \title{Fastqc}
 \usage{
-fastqc(fqs, fqpath, odir, fastqc_exe = get_opts("fastqc_exe"),
-  cpu_fastqc = get_opts("cpu_fastqc"), casava = TRUE,
-  fastqc_opts = get_opts("fastqc_opts"))
+fastqc(fqs, fqpath, odir, fastqc_exe = opts_flow$get("fastqc_exe"),
+  cpu_fastqc = opts_flow$get("cpu_fastqc"), casava = TRUE,
+  fastqc_opts = opts_flow$get("fastqc_opts"))
 }
 \arguments{
-\item{fqs}{}
-
-\item{fqpath}{}
-
-\item{odir}{}
-
-\item{fastqc_exe}{}
-
-\item{cpu_fastqc}{}
-
-\item{casava}{}
-
 \item{fastqc_opts}{}
 }
 \description{

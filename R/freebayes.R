@@ -10,7 +10,7 @@
 #> somatic_temp/TCGA-02-2485_somatic_primaryVsnormal.$chrom:$start..$end.vcf
 
 
-set_opts(
+opts_flow$set(
   ref_fasta = "/scratch/genomic_med/mtang1/scratch/LOWPASS_WGS_LGG1/ref_genome/human_g1k_v37.fasta",
   freebayes_exe = "/risapps/src6/speedseq/bin/freebayes",
   freebayes_opts = "--pooled-discrete --min-repeat-entropy 1 --genotype-qualities --min-alternate-fraction 0.05 --min-alternate-count 2",

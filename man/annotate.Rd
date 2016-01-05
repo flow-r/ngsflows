@@ -4,16 +4,16 @@
 \alias{annotate}
 \title{Generates a cmdline, when invoked annotates files using annovar}
 \usage{
-annotate(x, samplename = get_opts("samplename"), outfile, build = "hg19",
-  annovar_dir = get_opts("annovar_dir"),
+annotate(files, samplename = opts_flow$get("samplename"), outfile,
+  build = "hg19", annovar_dir = opts_flow$get("annovar_dir"),
   annotate_func = "ngsflows::annotate_mutect")
 }
 \arguments{
-\item{x}{files to be annotates}
-
 \item{samplename}{name of the sample, to be added to the flowmat}
 
 \item{outfile}{name of the final merged file.}
+
+\item{x}{files to be annotates}
 }
 \description{
 Generates a cmdline, when invoked annotates files using annovar

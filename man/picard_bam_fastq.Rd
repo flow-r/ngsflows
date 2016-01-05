@@ -4,27 +4,17 @@
 \alias{picard_bam_fastq}
 \title{Title}
 \usage{
-picard_bam_fastq(bam, samplename = get_opts("samplename"), paired = TRUE,
-  split = FALSE, num_reads = 8e+06,
+picard_bam_fastq(bam, samplename = opts_flow$get("samplename"),
+  paired = TRUE, split = FALSE, num_reads = 8e+06,
   split_fq_exe = system.file("scripts/split_fq", package = "ngsflows"),
-  java_exe = get_opts("java_exe"), java_mem = get_opts("java_mem"),
-  java_tmp = get_opts("java_tmp"), picard_dir = get_opts("picard_dir"),
+  java_exe = opts_flow$get("java_exe"),
+  java_mem = opts_flow$get("java_mem"),
+  java_tmp = opts_flow$get("java_tmp"),
+  picard_dir = opts_flow$get("picard_dir"),
   bam_fastq_opts = "INCLUDE_NON_PF_READS=true INCLUDE_NON_PRIMARY_ALIGNMENTS=false RE_REVERSE=true VALIDATION_STRINGENCY=LENIENT")
 }
 \arguments{
-\item{samplename}{}
-
-\item{java_exe}{}
-
-\item{java_mem}{}
-
-\item{java_tmp}{}
-
 \item{picard_dir}{}
-
-\item{x}{}
-
-\item{mergedbam}{}
 }
 \description{
 Title

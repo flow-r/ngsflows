@@ -4,7 +4,7 @@
 \alias{get_fasta_chrs}
 \title{Read the associated dictionary file and return a list of chromosome names}
 \usage{
-get_fasta_chrs(x = get_opts("ref_fasta"), length = FALSE)
+get_fasta_chrs(x = opts_flow$get("ref_fasta"), length = FALSE)
 }
 \arguments{
 \item{x}{a reference genome fasta file}

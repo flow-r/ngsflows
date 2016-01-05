@@ -7,8 +7,6 @@
 modules(pkg = "ngsflows", show = TRUE)
 }
 \arguments{
-\item{pkg}{}
-
 \item{show}{}
 }
 \description{

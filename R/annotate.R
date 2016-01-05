@@ -353,6 +353,8 @@ annotate <- function(files, samplename = opts_flow$get("samplename"),
 
   return(list(flowmat = flowmat, outfiles = list(merged = outfile)))
 }
+attr(annotate, "type") <-"module"
+
 
 ## --- testing annotate_mutect
 if(FALSE){

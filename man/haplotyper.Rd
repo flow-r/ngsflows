@@ -4,12 +4,14 @@
 \alias{haplotyper}
 \title{a wrapper around gatk haplotyper}
 \usage{
-haplotyper(x, samplename = get_opts("samplename"), outfile,
-  split_by_chr = TRUE, ref_fasta = get_opts("ref_fasta"),
-  java_exe = get_opts("java_exe"), java_mem = get_opts("java_mem"),
-  java_tmp = get_opts("java_tmp"), gatk_jar = get_opts("gatk_jar"),
-  haplotyper_opts = get_opts("haplotyper_opts"),
-  cpu_haplotyper = get_opts("cpu_haplotyper"))
+haplotyper(x, samplename = opts_flow$get("samplename"), outfile,
+  split_by_chr = TRUE, ref_fasta = opts_flow$get("ref_fasta"),
+  java_exe = opts_flow$get("java_exe"),
+  java_mem = opts_flow$get("java_mem"),
+  java_tmp = opts_flow$get("java_tmp"),
+  gatk_jar = opts_flow$get("gatk_jar"),
+  haplotyper_opts = opts_flow$get("haplotyper_opts"),
+  cpu_haplotyper = opts_flow$get("cpu_haplotyper"))
 }
 \arguments{
 \item{x}{input bam}

@@ -13,7 +13,7 @@ if(FALSE){
   fqs1 = head(subset(out, read == 1)$file, 2)
   fqs2 = head(subset(out, read == 2)$file, 2)
   ## get sample_name as a option for all subsequent steps
-  set_opts(samplename = "MS132")
+  opts_flow$set(samplename = "MS132")
 
   source('~/Dropbox/public/github_ngsflows/inst/pipelines/fastq_haplotyper.R')
   load_opts('~/Dropbox/public/github_ngsflows/inst/pipelines/fastq_haplotyper.conf', check = FALSE)

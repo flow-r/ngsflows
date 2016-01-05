@@ -157,7 +157,7 @@ star <- star.2.4.2a
 
 
 
-set_opts(
+opts_flow$set(
   star_opts = "--sjdbOverhang 75",
   star_cpu = "{{{CPU}}}"
 )

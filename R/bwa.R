@@ -45,7 +45,7 @@ chk_fq <- function(fqs1, fqs2){
 
 
 ## --- define some default options, you may include them in ngsflows.conf
-set_opts(
+opts_flow$set(
   bwa_aln_opts = "-l -k 2 -n 3",
   bwa_sampe_opts = "-o 1000",
   bwa_index = "bwa_index",
@@ -53,7 +53,7 @@ set_opts(
 )
 
 
-#' Wrapper for BWA sequence alignment tool
+#' @title Wrapper for BWA sequence alignment tool
 #' 
 #' @description 
 #' Quoting from BWA's website:
@@ -94,7 +94,7 @@ attr(bwa, "type", "module" )
 
 #' @rdname bwa
 #' @export
-#' @importFrom flowr check_args opts_flow$get to_flowmat
+#' @importFrom flowr check_args opts_flow to_flowmat
 bwa.backtrack <- function(
   
   fqs1, 
