@@ -24,6 +24,7 @@ fastqc <- function(fqs,
   if(!missing(fqpath))
     fqs = list.files(fqpath, pattern = "fastq.gz", full.names = TRUE, recursive = TRUE)
 
+  check_args()
   if(!mean(file.exists(fqs)))
     stop("Some files do not exist, please check")
 
