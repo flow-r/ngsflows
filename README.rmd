@@ -1,0 +1,57 @@
+
+ngsflows
+----------------------------------------------------
+
+This package host several wrappers for tools. While we have a few example workflows, they are still evolving and may change.
+
+
+
+## List of modules
+
+
+```{bash  }
+tree R
+
+```
+
+
+
+## Installation:
+
+```r
+install.packages('devtools')
+library(devtools)
+install_github(repo = 'ngsflows', username = 'flow-r')
+```
+
+
+## Downloading resource bundles.
+
+Many of the above tools (like GATK, Mutect) require reference genome files. 
+
+These may be downloaded from [Illumina iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html) OR [Broad Insititute](https://www.broadinstitute.org/gatk/guide/article.php?id=1215) OR UCSC.
+
+Due to extensive testing and tool availability its recommended to use the GATK's bundle for Homo Sapiens, for other we can use one from iGenomes.
+
+We have a in built function to get genomes from Illumina (example below).
+
+
+```
+library(ngsflows)
+fetch_genomes(species="Homo_sapiens")
+
+################################################
+Available Sources:
+################################################
+
+Ensembl
+NCBI
+UCSC
+
+Example:
+fetch_genomes species=Homo_sapiens src=NCBI build=build37.2
+
+```
+
+
+
