@@ -36,6 +36,7 @@ splt_vcf_format <- function(x, format, prefix){
   x = as.character(unlist(x))
   format = as.character(unlist(format))
   lst <- lapply(1:length(x), function(i){
+    message(".")
     xi = x[i];formati = format[i]
     splt = strsplit(xi, ":")[[1]]
     nms = tolower(strsplit(formati, ":")[[1]])

@@ -73,23 +73,28 @@ parse_rd <- function (x, ...){
 #' @examples
 #' modules()
 modules <- function(pkg = "ngsflows", show = TRUE){
+  
   funcs = ls(paste0('package:', pkg))
 
   # for each function check attribute type, if module, return name.
+  f = funcs[1]
+  
   tmp <- lapply(funcs, function(f){
-    type = attr(get(f), 'type', exact = TRUE)
+    func = get(f)
+    type = attr(func, 'type', exact = TRUE)
     type = ifelse(is.null(type), 'NA', type)
 
     #debug(parse_rd)
     #rd =  parse_rd(rd)
+    ttl = NA
+
     if(type == "module")
-      rd = pkg_topic(pkg, f)
-    else
-      ttl = NA
+      ttl = pkg_topic(pkg, f)[[1]][[1]]
 
     data.frame(name = f, type = type, desc = ttl,
                stringsAsFactors = FALSE)
   })
+  
   tb = do.call(rbind, tmp)
   tb = subset(tb, type == "module")
 
