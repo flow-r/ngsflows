@@ -13,6 +13,7 @@
 #' @export
 #'
 fastqc <- function(fqs,
+									 samplename = opts_flow$get("samplename"),
          fqpath,
          odir,
          fastqc_exe = opts_flow$get("fastqc_exe"),
@@ -34,11 +35,14 @@ fastqc <- function(fqs,
     fqs = paste(fqs, collapse = " ")
   }
 
+  message("creating output directory")
+  try(dir.create(odir, recursive = TRUE))
+  
   fastqc_opts = paste(fastqc_opts, collapse = " ")
   cmds <- sprintf("%s -f fastq -o %s -t %s %s %s",
                   fastqc_exe, odir, cpu_fastqc, fastqc_opts, fqs)
 
-  flowmat = to_flowmat(cmds, samplename = samplename)
+  flowmat = to_flowmat(list(fastqc = cmds), samplename = samplename)
 
   return(list(flowmat = flowmat))
 }
