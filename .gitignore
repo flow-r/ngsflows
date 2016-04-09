@@ -5,9 +5,7 @@ usage.Rmd
 .gitignore
 *.#*
 .Rhistory
-
 .Rhistory
-
 .Rhistory
-
 *.R~
+.DS_Store
