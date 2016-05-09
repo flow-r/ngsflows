@@ -1,11 +1,12 @@
 
+### NOTE:
+This package has been replaced by [ultraseq](https://github.com/flow-r/ultraseq/ultraseq). All future development and bug fixes will be in towards ultraseq.
+
 ngsflows
 ----------------------------------------------------
 
 This package host several wrappers for tools. While we have a few example workflows, they are still evolving and may change.
 
-### NOTE:
-This package has been replaces by [ultraseq](https://github.com/flow-r/ultraseq/ultraseq). All future development and bug fixes will be in that package.
 
 
 ## List of modules
