@@ -1,6 +1,6 @@
 
 ### NOTE:
-This package has been replaced by [ultraseq](https://github.com/flow-r/ultraseq/ultraseq). All future development and bug fixes will be in towards ultraseq.
+This package has been replaced by [ultraseq](https://github.com/flow-r/ultraseq). All future development and bug fixes will be in towards ultraseq.
 
 ngsflows
 ----------------------------------------------------
